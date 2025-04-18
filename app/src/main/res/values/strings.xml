@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">Simple Scanner</string>
+    <string name="app_name">Scanner</string>
+    <string name="recent_title">Recent Scans</string>
+    <string name="scan">Scan</string>
+    <string name="template_name">Template name</string>
+    <string name="save">Save after scan</string>
+    <string name="scan_filters">Filters</string>
 </resources>

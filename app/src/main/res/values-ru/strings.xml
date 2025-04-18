@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Сканер</string>
+    <string name="recent_title">Недавние сканирования</string>
+    <string name="scan">Сканировать</string>
+    <string name="template_name">Шаблон названия</string>
+    <string name="save">Сохранить после сканирования</string>
+    <string name="scan_filters">Фильтры</string>
+</resources>
