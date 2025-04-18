@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_package = "su.pank.simplescanner.proto";
+option java_multiple_files = true;
+
+message Scans{
+  repeated Scanned scans = 1;
+}
+
+message Scanned{
+  string name = 1;
+  repeated string fileNames = 2;
+  int64 savedAsMs = 3;
+  Extension extension = 4;
+}
+
+enum Extension{
+  PDF = 0;
+  JPG = 1;
+}
