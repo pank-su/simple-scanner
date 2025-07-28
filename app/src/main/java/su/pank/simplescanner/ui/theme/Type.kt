@@ -1,5 +1,6 @@
 package su.pank.simplescanner.ui.theme
 
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
@@ -36,6 +37,7 @@ val headlineSmallFontFamily = FontFamily(
 )
 
 // Set of Material typography styles to start with
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
@@ -44,7 +46,7 @@ val Typography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
-    headlineSmall = TextStyle(
+    headlineSmallEmphasized = TextStyle(
         fontFamily = headlineSmallFontFamily,
         fontSize = 24.sp,
         lineHeight = 32.sp
