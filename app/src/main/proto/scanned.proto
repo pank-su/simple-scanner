@@ -10,8 +10,9 @@ message Scans{
 message Scanned{
   string name = 1;
   repeated string fileNames = 2;
-  int64 savedAsMs = 3;
-  Extension extension = 4;
+  string path = 3;
+  int64 savedAsMs = 4;
+  Extension extension = 5;
 }
 
 enum Extension{

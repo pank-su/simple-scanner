@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -39,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -49,11 +51,10 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.SCANNER
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import su.pank.simplescanner.R
+import su.pank.simplescanner.ui.theme.headlineSmallFontFamily
 import su.pank.simplescanner.ui.theme.icons.Cat
 import su.pank.simplescanner.ui.theme.icons.Scanner
 import java.io.File
-
-// TODO: добавить работу с состояниями
 
 @Composable
 fun rememberScannerClient(): GmsDocumentScanner {
@@ -84,25 +85,25 @@ fun MainView() {
 
     val launcher = rememberLauncherForActivityResult(StartIntentSenderForResult()) { result ->
 
-            if (result.resultCode == RESULT_OK) {
-                val result =
-                    GmsDocumentScanningResult.fromActivityResultIntent(result.data)
+        if (result.resultCode == RESULT_OK) {
+            val result =
+                GmsDocumentScanningResult.fromActivityResultIntent(result.data)
 
 
-                result?.pdf?.uri?.path?.let { path ->
-                    val externalUri = FileProvider.getUriForFile(
-                        context,
-                        activity?.packageName  + ".provider", File(path)
-                    )
-                    val shareIntent =
-                        Intent(Intent.ACTION_SEND).apply {
-                            putExtra(Intent.EXTRA_STREAM, externalUri)
-                            type = "application/pdf"
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        }
-                    activity?.startActivity(Intent.createChooser(shareIntent, "share pdf"))
-                }
+            result?.pdf?.uri?.path?.let { path ->
+                val externalUri = FileProvider.getUriForFile(
+                    context,
+                    activity?.packageName + ".provider", File(path)
+                )
+                val shareIntent =
+                    Intent(Intent.ACTION_SEND).apply {
+                        putExtra(Intent.EXTRA_STREAM, externalUri)
+                        type = "application/pdf"
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                activity?.startActivity(Intent.createChooser(shareIntent, "share pdf"))
             }
+        }
 
     }
     LaunchedEffect(Unit) {
@@ -118,12 +119,21 @@ fun MainView() {
 
 
     Scaffold(topBar = {
-        TopAppBar(title = { Text(stringResource(R.string.recent_title)) })
-    }, bottomBar = {
-        Image(Cat, "cat")
-
+        TopAppBar(title = {
+            Text(
+                stringResource(R.string.recent_title),
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }, actions = {
+            IconButton(onClick = {}) {
+                Icon()
+            }
+        })
     }) {
-        Column(Modifier.padding(it).padding(12.dp).fillMaxWidth()) {
+        Column(Modifier
+            .padding(it)
+            .padding(12.dp)
+            .fillMaxWidth()) {
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Button(
                     onClick = {
@@ -131,13 +141,17 @@ fun MainView() {
                             IntentSenderRequest.Builder(intentSender!!).build()
                         )
                     },
-                    modifier = Modifier.shadow(3.dp, RoundedCornerShape(16.dp)).height(82.dp),
-                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier
+                        .shadow(3.dp, RoundedCornerShape(16.dp))
+                        .height(82.dp),
                     contentPadding = PaddingValues(21.dp)
                 ) {
-                    Icon(Scanner, "scanner icon", Modifier.size(40.dp))
+                    Icon(painterResource(R.drawable.scan), "scanner icon", Modifier.size(40.dp))
                     Spacer(Modifier.width(12.dp))
-                    Text(stringResource(R.string.scan), style = MaterialTheme.typography.headlineLarge)
+                    Text(
+                        stringResource(R.string.scan),
+                        style = MaterialTheme.typography.headlineLarge
+                    )
                 }
             }
 

@@ -4,9 +4,10 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.Instant
 import su.pank.simplescanner.proto.Scans
 import java.io.File
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 val Context.scans: DataStore<Scans> by dataStore(
     fileName = "scans.pb",
@@ -14,7 +15,7 @@ val Context.scans: DataStore<Scans> by dataStore(
 )
 
 
-
+@OptIn(ExperimentalTime::class)
 sealed interface Scanned {
     val name: String
     val savedAt: Instant
@@ -68,6 +69,7 @@ class ScansRepository(private val context: Context) {
 
 }
 
+@OptIn(ExperimentalTime::class)
 private fun su.pank.simplescanner.proto.Scanned.toDataModel(): Scanned? {
     return when (this.extension.name) {
         "PDF" -> {
