@@ -1,20 +1,21 @@
 [versions]
-datastore = "1.1.4"
-kotlin = "2.1.10"
-agp = "8.9.1"
+datastore = "1.1.7"
+kotlin = "2.2.0"
+agp = "8.11.1"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-kotlinxDatetime = "0.6.2"
-lifecycleRuntimeKtx = "2.8.7"
+kotlinxDatetime = "0.7.1"
+lifecycleRuntimeKtx = "2.9.2"
 activityCompose = "1.10.1"
-composeBom = "2025.04.00"
+composeBom = "2025.07.00"
 document-scanner = "16.0.0-beta1"
-navigation-compose = "2.8.9"
-protobuf = "0.9.4"
-protobufJavalite = "3.21.7"
-koin = "4.0.1-Beta1"
+navigation-compose = "2.9.2"
+protobuf = "0.9.5"
+protobufJavalite = "4.31.1"
+materail3 = "1.4.0-alpha18"
+koin = "4.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -31,7 +32,7 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref="materail3"}
 document-scanner = { group = "com.google.android.gms", name = "play-services-mlkit-document-scanner", version.ref = "document-scanner" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
