@@ -126,7 +126,7 @@ fun MainView() {
             )
         }, actions = {
             IconButton(onClick = {}) {
-                Icon()
+                //Icon()
             }
         })
     }) {
