@@ -16,6 +16,8 @@ protobuf = "0.9.5"
 protobufJavalite = "4.31.1"
 materail3 = "1.4.0-alpha18"
 koin = "4.1.0"
+hilt = "2.57"
+ksp = "2.2.0-2.0.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -43,8 +45,13 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose-viewmodel-navigation = { module = "io.insert-koin:koin-compose-viewmodel-navigation", version.ref = "koin" }
 koin-android = {module = "io.insert-koin:koin-android", version.ref="koin"}
 
+hilt = {module = "com.google.dagger:hilt-android", version.ref="hilt"}
+hilt-compiler = {module="com.google.dagger:hilt-android-compiler", version.ref="hilt"}
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
+hilt-android = {  id = "com.google.dagger.hilt.android", version.ref="hilt"}
+ksp = {id = "com.google.devtools.ksp", version.ref ="ksp"}
