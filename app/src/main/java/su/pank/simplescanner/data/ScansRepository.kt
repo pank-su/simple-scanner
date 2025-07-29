@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import kotlinx.coroutines.flow.map
 import su.pank.simplescanner.proto.Scans
+import su.pank.simplescanner.proto.Scanned
 import java.io.File
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -16,17 +17,17 @@ val Context.scans: DataStore<Scans> by dataStore(
 
 
 @OptIn(ExperimentalTime::class)
-sealed interface Scanned {
+sealed interface ScannedItem {
     val name: String
     val savedAt: Instant
 
-    fun toProtoModel(): su.pank.simplescanner.proto.Scanned
+    fun toProtoModel():Scanned
 
     data class PdfFile(
         override val name: String,
         override val savedAt: Instant,
         val file: File
-    ) : Scanned {
+    ) : ScannedItem {
         // TODO: сделать метод более простым и вынести
         override fun toProtoModel(): su.pank.simplescanner.proto.Scanned {
             return su.pank.simplescanner.proto.Scanned.newBuilder().setName(name)
@@ -34,11 +35,11 @@ sealed interface Scanned {
         }
     }
 
-    data class JpgFile(
+    data class JpgItem(
         override val name: String,
         override val savedAt: Instant,
         val files: List<File>
-    ) : Scanned {
+    ) : ScannedItem {
         override fun toProtoModel(): su.pank.simplescanner.proto.Scanned {
             return su.pank.simplescanner.proto.Scanned.newBuilder().setName(name)
                 .setSavedAsMs(savedAt.toEpochMilliseconds()).addAllFileNames(files.map { it.name })
@@ -59,7 +60,7 @@ class ScansRepository(private val context: Context) {
         it.scansList.mapNotNull { it.toDataModel() }
     }
 
-    suspend fun addScan(scanned: Scanned) {
+    suspend fun addScan(scanned: ScannedItem) {
 
         context.scans.updateData {
             it.toBuilder().addScans(scanned.toProtoModel()).build()
@@ -70,10 +71,10 @@ class ScansRepository(private val context: Context) {
 }
 
 @OptIn(ExperimentalTime::class)
-private fun su.pank.simplescanner.proto.Scanned.toDataModel(): Scanned? {
+private fun Scanned.toDataModel(): ScannedItem? {
     return when (this.extension.name) {
         "PDF" -> {
-            Scanned.PdfFile(
+            ScannedItem.PdfFile(
                 name,
                 Instant.fromEpochMilliseconds(savedAsMs),
                 File(fileNamesList.first())
@@ -81,7 +82,7 @@ private fun su.pank.simplescanner.proto.Scanned.toDataModel(): Scanned? {
         }
 
         "JPG" -> {
-            Scanned.JpgFile(
+            ScannedItem.JpgItem(
                 name,
                 Instant.fromEpochMilliseconds(savedAsMs),
                 fileNamesList.map { File(it) })
