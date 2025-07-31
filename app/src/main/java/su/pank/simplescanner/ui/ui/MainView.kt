@@ -1,9 +1,9 @@
 package su.pank.simplescanner.ui.ui
 
-import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.IntentSender
+import android.util.Log
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -56,6 +56,7 @@ fun rememberScannerClient(): GmsDocumentScanner {
     return remember {
         val options = GmsDocumentScannerOptions.Builder().setGalleryImportAllowed(true)
             .setResultFormats(RESULT_FORMAT_PDF).setScannerMode(SCANNER_MODE_FULL).build()
+
         return@remember GmsDocumentScanning.getClient(options)
     }
 
@@ -97,6 +98,7 @@ fun MainView(scan: () -> Unit, onListViewOpen: () -> Unit) {
         }
 
     }
+
     // TODO: убрать эту логику в SplashScreen
     LaunchedEffect(Unit) {
         activity?.let {
@@ -104,6 +106,7 @@ fun MainView(scan: () -> Unit, onListViewOpen: () -> Unit) {
                 intentSender = it
                 it
             }.addOnFailureListener {
+                Log.d("MainScreen", it.stackTraceToString())
                 // TODO: добавить  state если не загрузилось
             }
         }
