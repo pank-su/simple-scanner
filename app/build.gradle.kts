@@ -62,6 +62,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.material)
+
 
     implementation(libs.kotlinx.datetime)
 
