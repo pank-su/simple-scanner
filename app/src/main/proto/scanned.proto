@@ -3,19 +3,34 @@ syntax = "proto3";
 option java_package = "su.pank.simplescanner.proto";
 option java_multiple_files = true;
 
+/**
+  All scans
+ */
 message Scans{
   repeated Scanned scans = 1;
 }
 
+/**
+  @property name scan name (general)
+  @property fileNames file names that are stored in [path].If the file extension is PDF, there will be only one file
+  @property path path in storage where these files are saved (maybe UUID)
+  @property savedAsMs when is saved or updated
+
+ */
 message Scanned{
   string name = 1;
   repeated string fileNames = 2;
   string path = 3;
   int64 savedAsMs = 4;
-  Extension extension = 5;
+  ScansSettings scanSettings = 6;
 }
 
 enum Extension{
   PDF = 0;
   JPG = 1;
+}
+
+
+message ScansSettings{
+  Extension extension = 1;
 }

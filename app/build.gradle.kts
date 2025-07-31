@@ -16,7 +16,10 @@ protobuf{
         generateProtoTasks {
             all().forEach {
                 it.builtins {
-                    create("java") {
+                    register("java") {
+                        option("lite")
+                    }
+                    register("kotlin"){
                         option("lite")
                     }
                 }
@@ -27,7 +30,7 @@ protobuf{
 
 android {
     namespace = "su.pank.simplescanner"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "su.pank.simplescanner"
@@ -68,7 +71,10 @@ dependencies {
 
     implementation(libs.kotlinx.datetime)
 
-    implementation(libs.protobuf.javalite)
+    implementation(libs.protobuf.kotlin)
+
+    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.document.scanner)
     implementation(libs.androidx.datastore)
