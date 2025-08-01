@@ -2,6 +2,7 @@ package su.pank.simplescanner.domain
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
@@ -18,11 +19,9 @@ class CheckGoogleServicesUseCase @Inject constructor(
 ) {
     private val googleApiAvailability = GoogleApiAvailability.getInstance()
 
-
-
-
-    suspend operator fun invoke(): CheckResult {
+    suspend operator fun invoke(activity: Activity? = null): CheckResult {
         val prefs = userPreferencesRepository.userPreferences.first()
+        Log.d("CheckGoogleServicesUseCase", "hasGoogleApi: ${prefs.hasGoogleAPI}")
         if (prefs.hasGoogleAPI) {
             return CheckResult.OK
         }
@@ -35,17 +34,21 @@ class CheckGoogleServicesUseCase @Inject constructor(
             }
         }
         val client = GmsDocumentScanning.getClient(GmsDocumentScannerOptions.DEFAULT_OPTIONS)
-        try {
-
-            client.getStartScanIntent(context as Activity).await()
-            userPreferencesRepository.googleApiChecked()
-            return CheckResult.OK
+        return try {
+            if (activity != null) {
+                client.getStartScanIntent(activity).await()
+                userPreferencesRepository.googleApiChecked()
+                CheckResult.OK
+            } else {
+                CheckResult.RESOLVABLE
+            }
         } catch (_: Exception) {
-            return CheckResult.RESOLVABLE
+            CheckResult.RESOLVABLE
         }
     }
 
     enum class CheckResult {
+
         OK,
         RESOLVABLE, // Need install or update Google Services
         ERROR // IDK

@@ -1,31 +1,59 @@
 package su.pank.simplescanner.ui
 
+import android.app.Activity
+import androidx.datastore.core.IOException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import su.pank.simplescanner.R
+import su.pank.simplescanner.data.preferences.UserPreferencesRepository
 import su.pank.simplescanner.domain.CheckGoogleServicesUseCase
+import su.pank.simplescanner.proto.UserPreferences
+import su.pank.simplescanner.ui.utils.ResourceProvider
 import javax.inject.Inject
 
 @HiltViewModel
-class MainActivityViewModel @Inject constructor(private val checkGoogleServicesUseCase: CheckGoogleServicesUseCase) :
+class MainActivityViewModel @Inject constructor(
+    private val checkGoogleServicesUseCase: CheckGoogleServicesUseCase,
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val resourceProvider: ResourceProvider
+) :
     ViewModel() {
-    val state = flow {
-        emit(
-            when (checkGoogleServicesUseCase()) {
-                CheckGoogleServicesUseCase.CheckResult.OK -> MainActivityState.Success
-                CheckGoogleServicesUseCase.CheckResult.RESOLVABLE -> MainActivityState.NeedUpdateGoogleServices
-                CheckGoogleServicesUseCase.CheckResult.ERROR -> MainActivityState.Error("")
-            }
-        )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5_000),
-        initialValue = MainActivityState.Loading,
-    )
+    private val _state = MutableStateFlow<MainActivityState>(MainActivityState.Loading)
+    val state = _state.asStateFlow()
+
+    suspend fun loadData() = userPreferencesRepository.userPreferences.first()
+
+
+    fun checkGoogleServicesAndLoadData(activity: Activity) {
+        viewModelScope.launch {
+            val result = checkGoogleServicesUseCase(activity)
+            _state.value =
+                when (result) {
+                    CheckGoogleServicesUseCase.CheckResult.OK -> {
+                        try {
+                            val data = loadData()
+                            MainActivityState.Success(data)
+
+                        } catch (ioException: IOException) {
+                            MainActivityState.Error(resourceProvider.getString(R.string.error_unknown))
+                        }
+                    }
+
+                    CheckGoogleServicesUseCase.CheckResult.RESOLVABLE -> MainActivityState.NeedInstallGoogleServices
+                    CheckGoogleServicesUseCase.CheckResult.ERROR -> MainActivityState.Error(
+                        resourceProvider.getString(R.string.error_unknown)
+                    )
+                }
+
+        }
+    }
 }
+
 
 /**
  * State of MainActivity
@@ -39,10 +67,10 @@ sealed interface MainActivityState {
     /**
      * Data loads success
      */
-    object Success : MainActivityState
+    data class Success(val prefs: UserPreferences) : MainActivityState
 
 
-    object NeedUpdateGoogleServices : MainActivityState
+    object NeedInstallGoogleServices : MainActivityState
 
     /**
      * Show error dialog with message

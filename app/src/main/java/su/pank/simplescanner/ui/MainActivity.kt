@@ -6,9 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 import su.pank.simplescanner.ui.ui.MainView
@@ -24,20 +24,20 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
+        splashScreen.setKeepOnScreenCondition { viewModel.state.value == MainActivityState.Loading  }
 
-
-        splashScreen.setKeepOnScreenCondition { viewModel.state.value == MainActivityState.Loading }
+        viewModel.checkGoogleServicesAndLoadData(this)
         enableEdgeToEdge()
         setContent {
 
-            val state by viewModel.state.collectAsStateWithLifecycle()
+            val state by viewModel.state.collectAsState()
             SimpleScannerTheme {
                 // TODO: NEED SCREENS TO SHOW STATE
                 when (state) {
                     is MainActivityState.Error -> Text("ERROR")
                     MainActivityState.Loading -> Text("LOADING")
-                    MainActivityState.NeedUpdateGoogleServices -> Text("UPDATE PLEASE")
-                    MainActivityState.Success -> MainView({
+                    MainActivityState.NeedInstallGoogleServices -> Text("UPDATE PLEASE")
+                    is MainActivityState.Success -> MainView({
 
                     }) {}
                 }
@@ -46,6 +46,8 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+
 }
 
 
