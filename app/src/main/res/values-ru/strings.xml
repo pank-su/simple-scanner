@@ -7,4 +7,6 @@
     <string name="save">Сохранить после сканирования</string>
     <string name="scan_filters">Фильтры</string>
     <string name="alt_list">Список файлов</string>
+    <string name="error_no_services">Простите, у вас нет Google Сервисов. Вы не сможете использовать приложение.</string>
+    <string name="error_unknown">Неизвестная ошибка, пожалуйста не взламывай моё приложение.</string>
 </resources>

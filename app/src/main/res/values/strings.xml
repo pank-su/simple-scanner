@@ -6,4 +6,6 @@
     <string name="save">Save after scan</string>
     <string name="scan_filters">Filters</string>
     <string name="alt_list">File List</string>
+    <string name="error_no_services">Sorry, you don\'t have Google Services. You won\'t be able to use the app.</string>
+    <string name="error_unknown">Unknown error. Please, don\'t hack my app :(</string>
 </resources>
