@@ -86,7 +86,7 @@ fun SplashErrorView(message: String, onRestart: () -> Unit) {
         )
     )
 
-    BoxWithConstraints(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(bgColor),
