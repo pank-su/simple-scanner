@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.protobuf)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
@@ -65,11 +66,15 @@ android {
 }
 
 dependencies {
+
+    implementation(libs.lottie.compose)
+
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.material)
 
 
     implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.protobuf.kotlin)
 

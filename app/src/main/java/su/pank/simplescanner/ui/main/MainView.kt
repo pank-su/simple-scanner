@@ -1,4 +1,4 @@
-package su.pank.simplescanner.ui.ui
+package su.pank.simplescanner.ui.main
 
 import android.app.Activity.RESULT_OK
 import android.content.Intent

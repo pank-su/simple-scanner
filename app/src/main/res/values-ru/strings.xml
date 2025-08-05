@@ -9,4 +9,6 @@
     <string name="alt_list">Список файлов</string>
     <string name="error_no_services">Простите, у вас нет Google Сервисов. Вы не сможете использовать приложение.</string>
     <string name="error_unknown">Неизвестная ошибка, пожалуйста не взламывай моё приложение.</string>
+    <string name="error">Ошибка</string>
+    <string name="restart_app">Перезапустить приложение</string>
 </resources>

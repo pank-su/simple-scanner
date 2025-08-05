@@ -8,4 +8,6 @@
     <string name="alt_list">File List</string>
     <string name="error_no_services">Sorry, you don\'t have Google Services. You won\'t be able to use the app.</string>
     <string name="error_unknown">Unknown error. Please, don\'t hack my app :(</string>
+    <string name="error">Error</string>
+    <string name="restart_app">Restart app</string>
 </resources>
