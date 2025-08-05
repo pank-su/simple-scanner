@@ -1,9 +1,7 @@
 package su.pank.simplescanner.ui.splash_error
 
-import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -24,18 +22,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
-
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
-import androidx.compose.ui.util.lerp
-
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -99,11 +92,7 @@ fun SplashErrorView(message: String, onRestart: () -> Unit) {
             .background(bgColor),
         contentAlignment = Alignment.Center
     ) {
-        val backgroundScale by remember {
-            derivedStateOf {
-                lerp(1f, (this.maxWidth / 160.dp), progress)
-            }
-        }
+
         val iconSize by remember {
             derivedStateOf {
                 lerp(120.dp, 60.dp, progress)
@@ -132,7 +121,7 @@ fun SplashErrorView(message: String, onRestart: () -> Unit) {
                 )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.height(300.dp * progress)
+                    modifier = Modifier.height(250.dp * progress)
                 ) {
 
                     Text(
