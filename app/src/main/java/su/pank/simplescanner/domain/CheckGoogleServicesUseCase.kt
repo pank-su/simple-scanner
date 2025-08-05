@@ -26,6 +26,8 @@ class CheckGoogleServicesUseCase @Inject constructor(
             return CheckResult.OK
         }
         val code = googleApiAvailability.isGooglePlayServicesAvailable(context)
+        Log.d("CheckGoogleServicesUseCase", "isGooglePlayServicesAvailable: $code")
+
         if (code != ConnectionResult.SUCCESS) {
             return if (googleApiAvailability.isUserResolvableError(code)) {
                 CheckResult.RESOLVABLE

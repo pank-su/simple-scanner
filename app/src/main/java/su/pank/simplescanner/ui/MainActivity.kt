@@ -15,15 +15,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.core.content.IntentCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import su.pank.simplescanner.R
 import su.pank.simplescanner.ui.nav.ScannerNavHost
 import su.pank.simplescanner.ui.splash.Splash
 import su.pank.simplescanner.ui.splash_error.Error
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
-import kotlin.system.exitProcess
 
 
 @AndroidEntryPoint
@@ -46,6 +45,8 @@ class MainActivity : ComponentActivity() {
 
             val state by viewModel.state.collectAsState()
 
+            val updateString = stringResource(R.string.error_no_services)
+
             SimpleScannerTheme {
                 Box(
                     modifier = Modifier
@@ -63,7 +64,7 @@ class MainActivity : ComponentActivity() {
                         when (state) {
                             is MainActivityState.Error -> Error((state as MainActivityState.Error).message)
                             MainActivityState.Loading -> Splash
-                            MainActivityState.NeedInstallGoogleServices -> Error("Update Google Services please") // TODO: fix
+                            MainActivityState.NeedInstallGoogleServices -> Error(updateString) // TODO: maybe use update google services dialog
                             is MainActivityState.Success -> Splash
                         }
                     )
@@ -75,13 +76,9 @@ class MainActivity : ComponentActivity() {
     }
 
     fun restartApp() {
-        val mainIntent = IntentCompat.makeMainSelectorActivity(
-            Intent.ACTION_MAIN,
-            Intent.CATEGORY_LAUNCHER
-        )
-        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        applicationContext.startActivity(mainIntent)
-        exitProcess(0)
+        val intent: Intent = Intent(this, MainActivity::class.java)
+        this.startActivity(intent)
+        this.finishAffinity()
     }
 
 

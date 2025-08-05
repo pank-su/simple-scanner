@@ -50,6 +50,9 @@ import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 @Serializable
 data class Error(val message: String)
 
+/**
+ * Splash error animation
+ */
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SplashErrorView(message: String, onRestart: () -> Unit) {
@@ -110,7 +113,7 @@ fun SplashErrorView(message: String, onRestart: () -> Unit) {
 
 
 
-        Box(modifier = Modifier.size(240.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier, contentAlignment = Alignment.Center) {
             Box(
                 modifier = Modifier
                     .size(160.dp)
@@ -129,7 +132,7 @@ fun SplashErrorView(message: String, onRestart: () -> Unit) {
                 )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.height(140.dp * progress)
+                    modifier = Modifier.height(300.dp * progress)
                 ) {
 
                     Text(
