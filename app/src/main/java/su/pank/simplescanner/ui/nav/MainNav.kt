@@ -20,8 +20,8 @@ import su.pank.simplescanner.ui.views.splash_error.SplashErrorView
 @Composable
 fun ScannerNavHost(
     onRestart: () -> Unit,
+    modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    modifier: Modifier = Modifier
 ) {
 
     SharedTransitionLayout {

@@ -11,4 +11,46 @@
     <string name="error_unknown">Неизвестная ошибка, пожалуйста не взламывай моё приложение.</string>
     <string name="error">Ошибка</string>
     <string name="restart_app">Перезапустить приложение</string>
+    <string name="empty_scans">Здесь будет ваша  история сканирования</string>
+
+    <!-- Секунды -->
+    <plurals name="seconds">
+        <item quantity="one">%d секунда</item>
+        <item quantity="few">%d секунды</item>
+        <item quantity="many">%d секунд</item>
+        <item quantity="other">%d секунд</item>
+    </plurals>
+
+    <!-- Минуты -->
+    <plurals name="minutes">
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="many">%d минут</item>
+        <item quantity="other">%d минут</item>
+    </plurals>
+
+    <!-- Часы -->
+    <plurals name="hours">
+        <item quantity="one">%d час</item>
+        <item quantity="few">%d часа</item>
+        <item quantity="many">%d часов</item>
+        <item quantity="other">%d часов</item>
+    </plurals>
+
+    <!-- Дни -->
+    <plurals name="days">
+        <item quantity="one">%d день</item>
+        <item quantity="few">%d дня</item>
+        <item quantity="many">%d дней</item>
+        <item quantity="other">%d дней</item>
+    </plurals>
+
+    <!-- Месяцы -->
+    <plurals name="months">
+        <item quantity="one">%d месяц</item>
+        <item quantity="few">%d месяца</item>
+        <item quantity="many">%d месяцев</item>
+        <item quantity="other">%d месяцев</item>
+    </plurals>
+    <string name="ago">назад</string>
 </resources>

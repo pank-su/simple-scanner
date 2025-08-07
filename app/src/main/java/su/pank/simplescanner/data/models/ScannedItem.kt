@@ -2,14 +2,21 @@ package su.pank.simplescanner.data.models
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.vectorResource
 import su.pank.simplescanner.R
 import su.pank.simplescanner.proto.Scanned
 import su.pank.simplescanner.proto.scanned
 import java.io.File
+import java.util.Locale
+import kotlin.random.Random
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -67,13 +74,20 @@ sealed interface ScannedItem {
  */
 class TestItem(private val context: Context, override val name: String = "Test") : ScannedItem {
 
-    @OptIn(ExperimentalTime::class)
-    override val savedAt: Instant = Clock.System.now()
-    override val preview: ImageBitmap
-        get() {
-            return ImageBitmap.imageResource(context.resources, R.drawable.scan)
+    val icon: ImageVector
+        @Composable get() {
+            return ImageVector.vectorResource(R.drawable.pdf_icon)
         }
 
-    override fun toProtoModel(): Scanned = scanned {  }
+    @OptIn(ExperimentalTime::class)
+    override val savedAt: Instant = Clock.System.now() - Random.nextInt(1, 30).seconds
+    override val preview: ImageBitmap
+        get() {
+            return ImageBitmap.imageResource(context.resources, R.drawable.photo)
+        }
+
+    override fun toProtoModel(): Scanned = scanned { }
 
 }
+
+

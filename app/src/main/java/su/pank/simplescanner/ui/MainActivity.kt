@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
                         .background(MaterialTheme.colorScheme.surface)
                 )
                 // TODO: NEED SCREENS TO SHOW STATE
-                ScannerNavHost(onRestart = ::restartApp, navController)
+                ScannerNavHost(onRestart = ::restartApp, navController = navController)
 
                 LaunchedEffect(state) {
                     if (state is MainActivityState.Loading) {

@@ -1,4 +1,4 @@
-package su.pank.simplescanner.ui.utils
+package su.pank.simplescanner.utils
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext

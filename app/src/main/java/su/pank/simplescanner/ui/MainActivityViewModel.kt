@@ -13,7 +13,7 @@ import su.pank.simplescanner.R
 import su.pank.simplescanner.data.preferences.UserPreferencesRepository
 import su.pank.simplescanner.domain.CheckGoogleServicesUseCase
 import su.pank.simplescanner.proto.UserPreferences
-import su.pank.simplescanner.ui.utils.ResourceProvider
+import su.pank.simplescanner.utils.ResourceProvider
 import javax.inject.Inject
 
 @HiltViewModel

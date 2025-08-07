@@ -3,11 +3,13 @@ package su.pank.simplescanner.data.scans
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.map
 import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.proto.Scanned
 import su.pank.simplescanner.proto.Scans
 import java.io.File
+import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -20,8 +22,8 @@ val Context.scans: DataStore<Scans> by dataStore(
 /**
  * Сохранённые сканы
  */
-// FUTURE: пока чисто разметил полупсевдокодом, надо при реализации подправить эти файлы
-class ScansRepository(private val context: Context) {
+
+class ScansRepository @Inject constructor(@ApplicationContext private val context: Context) {
 
     val scans = context.scans.data.map {
         it.scansList.mapNotNull { it.toDataModel() }
