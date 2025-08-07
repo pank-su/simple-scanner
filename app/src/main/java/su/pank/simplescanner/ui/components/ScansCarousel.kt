@@ -48,6 +48,8 @@ import su.pank.simplescanner.R
 import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.data.models.TestItem
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
+import su.pank.simplescanner.utils.DarkLightPreview
+import su.pank.simplescanner.utils.LocalePreview
 import su.pank.simplescanner.utils.rememberTimeFormatter
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -146,7 +148,8 @@ fun ScansCarousel(scans: List<ScannedItem>, timeNow: Instant, modifier: Modifier
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
-@Preview
+@LocalePreview
+@DarkLightPreview
 @Composable
 fun ScansCarouselPreview() {
     val context = LocalContext.current
@@ -165,3 +168,21 @@ fun ScansCarouselPreview() {
         )
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
+@LocalePreview
+@DarkLightPreview
+@Composable
+fun EmptyScansCarouselPreview() {
+    val scans = listOf<ScannedItem>(
+
+    )
+    SimpleScannerTheme {
+        ScansCarousel(
+            scans = scans,
+            timeNow = Clock.System.now(),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
