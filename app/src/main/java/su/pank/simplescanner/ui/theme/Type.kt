@@ -29,8 +29,6 @@ val headlineSmallFontFamily = FontFamily(
             FontVariation.Setting("YTFI", 738f),
             FontVariation.Setting("YTLC", 514f),
             FontVariation.Setting("YTUC", 712f)
-
-
             //FontVariation.Setting("Xtra", 536f)
         )
     )

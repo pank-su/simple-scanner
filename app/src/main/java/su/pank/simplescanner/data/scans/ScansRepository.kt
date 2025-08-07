@@ -1,9 +1,6 @@
 package su.pank.simplescanner.data.scans
 
-import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.dataStore
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.map
 import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.proto.Scanned
@@ -13,25 +10,20 @@ import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-val Context.scans: DataStore<Scans> by dataStore(
-    fileName = "scans.pb",
-    serializer = ScansSerializer
-)
-
 
 /**
  * Сохранённые сканы
  */
 
-class ScansRepository @Inject constructor(@ApplicationContext private val context: Context) {
+class ScansRepository @Inject constructor(private val scansDataStore: DataStore<Scans>) {
 
-    val scans = context.scans.data.map {
+    val scans = scansDataStore.data.map {
         it.scansList.mapNotNull { it.toDataModel() }
     }
 
     suspend fun addScan(scanned: ScannedItem) {
 
-        context.scans.updateData {
+        scansDataStore.updateData {
             it.toBuilder().addScans(scanned.toProtoModel()).build()
         }
 

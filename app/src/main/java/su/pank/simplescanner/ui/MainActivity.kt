@@ -20,9 +20,10 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import su.pank.simplescanner.R
 import su.pank.simplescanner.ui.nav.ScannerNavHost
-import su.pank.simplescanner.ui.splash.Splash
+import su.pank.simplescanner.ui.views.splash.Splash
 import su.pank.simplescanner.ui.views.splash_error.SplashError
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
+import su.pank.simplescanner.ui.views.main.Main
 
 
 @AndroidEntryPoint
@@ -65,7 +66,7 @@ class MainActivity : ComponentActivity() {
                             is MainActivityState.Error -> SplashError((state as MainActivityState.Error).message)
                             MainActivityState.Loading -> Splash
                             MainActivityState.NeedInstallGoogleServices -> SplashError(updateString) // TODO: maybe use update google services dialog
-                            is MainActivityState.Success -> Splash
+                            is MainActivityState.Success -> Main
                         }
                     )
                 }
@@ -80,6 +81,8 @@ class MainActivity : ComponentActivity() {
         this.startActivity(intent)
         this.finishAffinity()
     }
+
+
 
 
 }

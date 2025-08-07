@@ -23,6 +23,7 @@ protobufJavalite = "4.31.1"
 materail3 = "1.5.0-alpha01"
 koin = "4.1.0"
 hilt = "2.57"
+hilt-nav-compose = "1.2.0"
 ksp = "2.2.0-2.0.2"
 
 [libraries]
@@ -59,6 +60,7 @@ koin-android = {module = "io.insert-koin:koin-android", version.ref="koin"}
 
 hilt = {module = "com.google.dagger:hilt-android", version.ref="hilt"}
 hilt-compiler = {module="com.google.dagger:hilt-android-compiler", version.ref="hilt"}
+hilt-navigation-compose = {module="androidx.hilt:hilt-navigation-compose", version.ref="hilt-nav-compose"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

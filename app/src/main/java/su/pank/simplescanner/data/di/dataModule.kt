@@ -33,10 +33,9 @@ object dataModule {
     @Provides
     @Singleton
     fun provideScansDataStore(
-        @ApplicationContext context: Context,
-        scansSerializer: ScansSerializer
+        @ApplicationContext context: Context
     ): DataStore<Scans> = DataStoreFactory.create(
-        serializer = scansSerializer,
+        serializer = ScansSerializer,
         scope = CoroutineScope(Dispatchers.IO)
     ) {
         context.dataStoreFile("scans.pb")

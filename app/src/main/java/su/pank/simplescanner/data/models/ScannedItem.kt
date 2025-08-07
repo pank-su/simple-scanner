@@ -9,8 +9,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.vectorResource
 import su.pank.simplescanner.R
+import su.pank.simplescanner.proto.Extension
 import su.pank.simplescanner.proto.Scanned
+import su.pank.simplescanner.proto.ScansSettings
 import su.pank.simplescanner.proto.scanned
+import su.pank.simplescanner.proto.scansSettings
 import java.io.File
 import java.util.Locale
 import kotlin.random.Random
@@ -44,6 +47,9 @@ sealed interface ScannedItem {
                 this.name = this@PdfFile.name
                 savedAsMs = savedAt.toEpochMilliseconds()
                 fileNames.add(file.name)
+                scanSettings = scansSettings {
+                    extension = Extension.PDF
+                }
             }
         }
     }
@@ -62,6 +68,9 @@ sealed interface ScannedItem {
                 this.name = this@JpgItem.name
                 savedAsMs = savedAt.toEpochMilliseconds()
                 fileNames.addAll(files.map { it.name })
+                scanSettings = scansSettings {
+                    extension = Extension.JPG
+                }
             }
 
         }

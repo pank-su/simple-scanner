@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.time.delay
+import su.pank.simplescanner.data.preferences.UserPreferencesRepository
 import su.pank.simplescanner.data.scans.ScansRepository
 import su.pank.simplescanner.proto.ScansSettings
 import su.pank.simplescanner.ui.components.ScansUiState
@@ -21,20 +21,30 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 @HiltViewModel
-class MainViewModel @Inject constructor(private val scansRepository: ScansRepository) :
+class MainViewModel @Inject constructor(
+    private val scansRepository: ScansRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
+) :
     ViewModel() {
 
-    val scansUiState = combine(scansRepository.scans, timeFlow()){
-        scans, time ->
-        if (scans.isEmpty()){
+    val scansUiState = combine(scansRepository.scans, timeFlow()) { scans, time ->
+        if (scans.isEmpty()) {
             return@combine ScansUiState.Empty
         }
         ScansUiState.Success(scans, time)
     }.catch { ScansUiState.Error }.stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5_000),
-            ScansUiState.Loading
-        )
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        ScansUiState.Loading
+    )
+
+    val settingsUiState = userPreferencesRepository.userPreferences.map {
+        ScansSettingsUiState.Success(it.scanSettings)
+    }.catch { ScansSettingsUiState.Error }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        ScansSettingsUiState.Loading
+    )
 
     private fun timeFlow() = flow {
         while (true) {
@@ -46,8 +56,8 @@ class MainViewModel @Inject constructor(private val scansRepository: ScansReposi
 }
 
 
-sealed interface ScansSettingsUiState{
-    object Loading: ScansSettingsUiState
-    object Error: ScansSettingsUiState
-    data class Success(val settings: ScansSettings): ScansSettingsUiState
+sealed interface ScansSettingsUiState {
+    object Loading : ScansSettingsUiState
+    object Error : ScansSettingsUiState
+    data class Success(val settings: ScansSettings) : ScansSettingsUiState
 }

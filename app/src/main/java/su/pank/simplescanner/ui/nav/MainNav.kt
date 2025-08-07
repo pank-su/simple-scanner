@@ -9,8 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import su.pank.simplescanner.ui.splash.Splash
-import su.pank.simplescanner.ui.splash.SplashView
+import su.pank.simplescanner.ui.views.splash.Splash
+import su.pank.simplescanner.ui.views.splash.SplashView
 import su.pank.simplescanner.ui.views.main.Main
 import su.pank.simplescanner.ui.views.main.MainRoute
 import su.pank.simplescanner.ui.views.splash_error.SplashError
@@ -36,7 +36,7 @@ fun ScannerNavHost(
                 }
             }
             composable<Main> {
-                MainRoute()
+                MainRoute(this@SharedTransitionLayout, this@composable, {}, {})
             }
         }
     }
