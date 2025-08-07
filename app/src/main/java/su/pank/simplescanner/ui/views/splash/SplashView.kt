@@ -37,7 +37,16 @@ fun SplashView(
             modifier = Modifier
                 .fillMaxSize(), contentAlignment = Alignment.Center
         ) {
-            SplashViewIconBox(MaterialTheme.colorScheme.surfaceContainer) {
+            Box(modifier = Modifier.size(240.dp), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier
+                        .size(160.dp)
+                        .background(MaterialTheme.colorScheme.surfaceContainer, shape = CircleShape)
+                        .sharedElement(
+                            sharedTransitionScope.rememberSharedContentState("splash-logo-bg"),
+                            animatedContentScope
+                        )
+                )
                 Icon(
                     painterResource(R.drawable.scan),
                     "scan",
@@ -49,23 +58,13 @@ fun SplashView(
                             animatedContentScope
                         )
                 )
+
             }
         }
+
+
     }
 
-
-}
-
-@Composable
-fun SplashViewIconBox(color: Color, icon: @Composable () -> Unit) {
-    Box(modifier = Modifier.size(240.dp), contentAlignment = Alignment.Center) {
-        Box(
-            modifier = Modifier
-                .size(160.dp)
-                .background(color, shape = CircleShape)
-        )
-        icon()
-    }
 }
 
 
@@ -80,20 +79,5 @@ fun SplashViewPreview() {
             }
         }
 
-    }
-}
-
-@Preview
-@Composable
-fun SplashViewIconBoxPreview() {
-    SimpleScannerTheme {
-        SplashViewIconBox(MaterialTheme.colorScheme.primary) {
-            Icon(
-                painterResource(R.drawable.scan),
-                "scan",
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(120.dp)
-            )
-        }
     }
 }

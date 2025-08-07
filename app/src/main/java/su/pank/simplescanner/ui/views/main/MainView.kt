@@ -13,13 +13,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -27,6 +32,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,6 +43,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -148,47 +158,100 @@ fun MainView(
                 Icon(painterResource(R.drawable.list), stringResource(R.string.alt_list))
             }
         })
-    }) {
-        Column(
+    }) { innerPadding ->
+        LazyColumn(
             Modifier
-                .padding(it)
-                .padding(12.dp)
-                .fillMaxWidth(),
+                .consumeWindowInsets(innerPadding)
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
+            contentPadding = innerPadding,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            item {
+                ScansCarousel(scansUiState, {})
+            }
 
-            ScansCarousel(scansUiState, {})
+            item {
+                with(sharedTransitionScope) {
 
-            with(sharedTransitionScope) {
-
-                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Button(
-                        onClick = scan,
-                        shapes = ButtonDefaults.shapes(),
-                        contentPadding = PaddingValues(48.dp, 32.dp)
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.scan), "scanner icon",
-                            Modifier
-                                .size(32.dp)
-                                .sharedElement(
-                                    sharedTransitionScope.rememberSharedContentState("splash-logo"),
-                                    animatedContentScope
-                                )
-                        )
-                        Spacer(Modifier.width(12.dp))
-                        Text(
-                            stringResource(R.string.scan),
-                            style = MaterialTheme.typography.headlineSmallEmphasized
-                        )
+                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Button(
+                            onClick = scan,
+                            shapes = ButtonDefaults.shapes(),
+                            contentPadding = PaddingValues(48.dp, 32.dp),
+                            modifier = Modifier.sharedElement(
+                                sharedTransitionScope.rememberSharedContentState("splash-logo-bg"),
+                                animatedContentScope
+                            )
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.scan), "scanner icon",
+                                Modifier
+                                    .size(32.dp)
+                                    .sharedElement(
+                                        sharedTransitionScope.rememberSharedContentState("splash-logo"),
+                                        animatedContentScope
+                                    )
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                stringResource(R.string.scan),
+                                style = MaterialTheme.typography.headlineSmallEmphasized
+                            )
+                        }
                     }
                 }
             }
+            item {
+                Row(
+                    Modifier.padding(horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+                ) {
+
+                    ToggleButton(
+                        checked = true,
+                        onCheckedChange = { },
+                        modifier = Modifier
+                            .weight(1f)
+                            .semantics { role = Role.RadioButton },
+                        shapes =
+                            ButtonGroupDefaults.connectedLeadingButtonShapes()
 
 
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.pdf_icon),
+                            contentDescription = "Localized description",
+                        )
+                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                        Text("PDF")
+                    }
+                    ToggleButton(
+                        checked = false,
+                        onCheckedChange = { },
+                        modifier = Modifier
+                            .weight(1f)
+                            .semantics { role = Role.RadioButton },
+                        shapes = ButtonGroupDefaults.connectedTrailingButtonShapes()
+
+
+                    ) {
+                        Icon(
+                            painterResource(R.drawable.jpeg_icon),
+                            contentDescription = "Localized description",
+                        )
+                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                        Text("JPG")
+                    }
+
+                }
+            }
         }
+
+
     }
 }
+
 
 @OptIn(ExperimentalTime::class, ExperimentalSharedTransitionApi::class)
 @Preview
