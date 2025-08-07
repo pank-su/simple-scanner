@@ -9,9 +9,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import su.pank.simplescanner.ui.splash_error.SplashErrorView
 import su.pank.simplescanner.ui.splash.Splash
 import su.pank.simplescanner.ui.splash.SplashView
+import su.pank.simplescanner.ui.views.main.Main
+import su.pank.simplescanner.ui.views.main.MainRoute
+import su.pank.simplescanner.ui.views.splash_error.SplashError
+import su.pank.simplescanner.ui.views.splash_error.SplashErrorView
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -26,11 +29,14 @@ fun ScannerNavHost(
             composable<Splash> {
                 SplashView(this@SharedTransitionLayout, this@composable)
             }
-            composable<su.pank.simplescanner.ui.splash_error.Error> {
-                val msg = it.toRoute<su.pank.simplescanner.ui.splash_error.Error>().message
+            composable<SplashError> {
+                val msg = it.toRoute<SplashError>().message
                 SplashErrorView(msg) {
                     onRestart()
                 }
+            }
+            composable<Main> {
+                MainRoute()
             }
         }
     }

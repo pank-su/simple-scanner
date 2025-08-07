@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import su.pank.simplescanner.R
 import su.pank.simplescanner.ui.nav.ScannerNavHost
 import su.pank.simplescanner.ui.splash.Splash
-import su.pank.simplescanner.ui.splash_error.Error
+import su.pank.simplescanner.ui.views.splash_error.SplashError
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 
 
@@ -62,9 +62,9 @@ class MainActivity : ComponentActivity() {
                     }
                     navController.navigate(
                         when (state) {
-                            is MainActivityState.Error -> Error((state as MainActivityState.Error).message)
+                            is MainActivityState.Error -> SplashError((state as MainActivityState.Error).message)
                             MainActivityState.Loading -> Splash
-                            MainActivityState.NeedInstallGoogleServices -> Error(updateString) // TODO: maybe use update google services dialog
+                            MainActivityState.NeedInstallGoogleServices -> SplashError(updateString) // TODO: maybe use update google services dialog
                             is MainActivityState.Success -> Splash
                         }
                     )
