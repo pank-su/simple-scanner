@@ -42,8 +42,13 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
 import su.pank.simplescanner.proto.scansSettings
+import su.pank.simplescanner.ui.components.ScansUiState
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
+import su.pank.simplescanner.utils.DarkLightPreview
+import su.pank.simplescanner.utils.LocalePreview
 import java.io.File
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @Serializable
 object Main
@@ -108,6 +113,8 @@ fun MainView(scansUiState: ScansUiState, settingUiState: ScansSettingsUiState, s
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+
+
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Button(
                     onClick = scan,
@@ -130,12 +137,15 @@ fun MainView(scansUiState: ScansUiState, settingUiState: ScansSettingsUiState, s
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Preview
+@LocalePreview
+@DarkLightPreview
 @Composable
 fun MainViewPreview() {
     SimpleScannerTheme {
         MainView(
-            ScansUiState.Success(listOf()),
+            ScansUiState.Success(listOf(), Clock.System.now()),
             ScansSettingsUiState.Success(scansSettings { }),
             {}) { }
     }
