@@ -11,7 +11,6 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,7 +22,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -51,7 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanner
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_PDF
@@ -74,13 +71,14 @@ import kotlin.time.ExperimentalTime
 @Serializable
 object Main
 
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainRoute(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     onListViewOpen: () -> Unit,
-    onSuccessScan: () -> Unit,
+    onSuccessScan: (GmsDocumentScanningResult) -> Unit,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -92,7 +90,12 @@ fun MainRoute(
 
         if (result.resultCode == RESULT_OK) {
             val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
+            if (result != null) {
+                onSuccessScan(result)
+                return@rememberLauncherForActivityResult
 
+            }
+            // TODO: проверить нет ли ошибок при ином исходе
             result?.pdf?.uri?.path?.let { path ->
                 // Переход в следующий экран с файлом
 
@@ -113,7 +116,9 @@ fun MainRoute(
         animatedContentScope,
         scansUiState,
         settingUiState,
-        {},
+        {
+            if (activity != null)
+            viewModel.scan(activity, GmsDocumentScannerOptions.DEFAULT_OPTIONS, launcher) },
         onListViewOpen
     )
 

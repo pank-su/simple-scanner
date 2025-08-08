@@ -36,7 +36,7 @@ fun ScannerNavHost(
                 }
             }
             composable<Main> {
-                MainRoute(this@SharedTransitionLayout, this@composable, {}, {})
+                MainRoute(this@SharedTransitionLayout, this@composable, {}, {navController.navigate()})
             }
         }
     }
