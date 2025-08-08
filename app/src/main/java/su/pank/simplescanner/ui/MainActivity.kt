@@ -6,9 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.animation.AnticipateInterpolator
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -29,16 +27,15 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import su.pank.simplescanner.R
 import su.pank.simplescanner.ui.nav.ScannerNavHost
-import su.pank.simplescanner.ui.views.splash.Splash
-import su.pank.simplescanner.ui.views.splash_error.SplashError
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 import su.pank.simplescanner.ui.views.main.Main
+import su.pank.simplescanner.ui.views.splash.Splash
+import su.pank.simplescanner.ui.views.splash_error.SplashError
 import kotlin.time.Duration.Companion.seconds
 
 
@@ -55,10 +52,10 @@ class MainActivity : ComponentActivity() {
 
 
         splashScreen.setKeepOnScreenCondition { viewModel.state.value == MainActivityState.Loading }
-        
+
         splashScreen.setOnExitAnimationListener { splashScreenProvider ->
             val splashScreenView = splashScreenProvider.view
-            
+
             val animator = ObjectAnimator.ofFloat(
                 splashScreenView,
                 View.ALPHA,
@@ -66,15 +63,17 @@ class MainActivity : ComponentActivity() {
                 0f
             ).apply {
                 interpolator = AnticipateInterpolator()
-                duration = 500L
+                duration = 100L
                 doOnEnd { splashScreenProvider.remove() }
             }
-            
+
             animator.start()
         }
 
+        // FIX: System bar colors
+
         viewModel.checkGoogleServicesAndLoadData(this)
-        
+
         setContent {
             val navController = rememberNavController()
 
@@ -90,7 +89,7 @@ class MainActivity : ComponentActivity() {
                 )
                 // TODO: NEED SCREENS TO SHOW STATE
                 ScannerNavHost(onRestart = ::restartApp, navController = navController)
-                StatusBarProtection()
+                //StatusBarProtection()
 
 
                 LaunchedEffect(state) {
@@ -120,11 +119,7 @@ class MainActivity : ComponentActivity() {
     }
 
 
-
-
 }
-
-
 
 
 @Composable
