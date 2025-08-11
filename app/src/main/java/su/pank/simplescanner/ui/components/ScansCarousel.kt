@@ -206,7 +206,7 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(
+                        .maskClip(
                             RoundedCornerShape(4.dp)
                         )
                 ) {
