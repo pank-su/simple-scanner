@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.map
 import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.proto.Scanned
 import su.pank.simplescanner.proto.Scans
-import java.io.File
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -16,12 +15,12 @@ import kotlin.time.Instant
  */
 class ScansRepository @Inject constructor(private val scansDataStore: DataStore<Scans>) {
 
+    @OptIn(ExperimentalTime::class)
     val scans = scansDataStore.data.map {
-        it.scansList.mapNotNull { it.toDataModel() }
+        it.scansList.mapNotNull { it.toDataModel() }.sortedByDescending { it.savedAt }
     }
 
-    suspend fun addScan(item: ScannedItem) {
-
+    suspend fun saveScan(item: ScannedItem) {
         scansDataStore.updateData {
             it.toBuilder().addScans(item.toProtoModel()).build()
         }
@@ -38,16 +37,18 @@ private fun Scanned.toDataModel(): ScannedItem? {
         "PDF" -> {
             ScannedItem.PdfFile(
                 name,
-                Instant.fromEpochMilliseconds(savedAsMs),
-                fileNamesList.first()
+
+                fileNamesList.first(),
+                Instant.fromEpochMilliseconds(savedAsMs)
             )
         }
 
         "JPG" -> {
             ScannedItem.JpgItem(
                 name,
-                Instant.fromEpochMilliseconds(savedAsMs),
-                fileNamesList.map { it })
+                fileNamesList.map { it },
+                Instant.fromEpochMilliseconds(savedAsMs)
+                )
         }
 
         else -> {

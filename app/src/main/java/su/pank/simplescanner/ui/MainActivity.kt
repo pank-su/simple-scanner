@@ -87,7 +87,6 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.surface)
                 )
-                // TODO: NEED SCREENS TO SHOW STATE
                 ScannerNavHost(onRestart = ::restartApp, navController = navController)
                 //StatusBarProtection()
 
@@ -96,7 +95,7 @@ class MainActivity : ComponentActivity() {
                     if (state is MainActivityState.Loading) {
                         return@LaunchedEffect
                     }
-                    delay(0.3.seconds)
+                    delay(0.5.seconds)
                     navController.navigate(
                         when (state) {
                             is MainActivityState.Error -> SplashError((state as MainActivityState.Error).message)

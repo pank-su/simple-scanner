@@ -33,6 +33,29 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+
+            <meta-data
+                android:name="su.pank.simplescanner.startup.DependencyGraphInitializer"
+                android:value="androidx.startup"
+                 />
+
+
+            <meta-data
+                android:name="su.pank.simplescanner.startup.WorkManagerInitializer"
+                android:value="androidx.startup"
+                />
+
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"

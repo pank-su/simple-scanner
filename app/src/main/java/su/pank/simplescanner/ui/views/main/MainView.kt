@@ -57,6 +57,7 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
+import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.data.models.TestItem
 import su.pank.simplescanner.proto.scansSettings
 import su.pank.simplescanner.ui.components.ScansCarousel
@@ -78,20 +79,20 @@ fun MainRoute(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     onListViewOpen: () -> Unit,
-    onSuccessScan: (GmsDocumentScanningResult) -> Unit,
+    onSuccessScan: (ScannedItem) -> Unit,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val activity = LocalActivity.current
 
 
-    // TODO: replace to activity
     val launcher = rememberLauncherForActivityResult(StartIntentSenderForResult()) { result ->
 
         if (result.resultCode == RESULT_OK) {
             val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
             if (result != null) {
-                onSuccessScan(result)
+                val scanItem: ScannedItem = viewModel.saveFile(result, context)
+                onSuccessScan(scanItem)
                 return@rememberLauncherForActivityResult
 
             }
@@ -118,7 +119,8 @@ fun MainRoute(
         settingUiState,
         {
             if (activity != null)
-            viewModel.scan(activity, GmsDocumentScannerOptions.DEFAULT_OPTIONS, launcher) },
+            viewModel.scan(activity, GmsDocumentScannerOptions.Builder().setGalleryImportAllowed(true)
+                .setResultFormats(RESULT_FORMAT_PDF).build(), launcher) },
         onListViewOpen
     )
 
@@ -173,7 +175,7 @@ fun MainView(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                ScansCarousel(scansUiState, {})
+                ScansCarousel(scansUiState, {}, modifier = Modifier.fillMaxWidth())
             }
 
             item {

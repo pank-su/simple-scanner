@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
+import androidx.pdf.PdfLoader
+import androidx.pdf.SandboxedPdfLoader
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,4 +42,10 @@ object dataModule {
     ) {
         context.dataStoreFile("scans.pb")
     }
+
+    @Provides
+    @Singleton
+    fun providePdfLoader(@ApplicationContext context: Context): PdfLoader =
+        SandboxedPdfLoader(context)
+
 }

@@ -1,12 +1,17 @@
 package su.pank.simplescanner.ui.views.main
 
 import android.app.Activity
+import android.content.Context
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
+import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,10 +22,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.serialization.json.Json
+import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.data.preferences.UserPreferencesRepository
 import su.pank.simplescanner.data.scans.ScansRepository
 import su.pank.simplescanner.proto.ScansSettings
 import su.pank.simplescanner.ui.components.ScansUiState
+import su.pank.simplescanner.work.SaveScanWorker
 import javax.inject.Inject
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
@@ -77,6 +85,29 @@ class MainViewModel @Inject constructor(
                 e.printStackTrace()
             }
         }
+    }
+
+    fun saveFile(result: GmsDocumentScanningResult, context: Context): ScannedItem {
+        val file: ScannedItem? = if (result.pdf?.uri != null) {
+            ScannedItem.PdfFile("Test", result.pdf!!.uri.toString())
+        } else if (result.pages != null) {
+            ScannedItem.JpgItem("Test", result.pages!!.map { it.imageUri.toString() })
+        } else null
+
+        requireNotNull(file)
+        val workManager = WorkManager.getInstance(context)
+        // Send request to save scan and open file
+        workManager.enqueue(
+            OneTimeWorkRequestBuilder<SaveScanWorker>()
+                .setInputData(
+                    workDataOf(
+                        "data" to Json.encodeToString(file)
+                    )
+                )
+                .build()
+        )
+        return file
+
     }
 
 }

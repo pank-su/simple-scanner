@@ -35,7 +35,7 @@ android {
 
     defaultConfig {
         applicationId = "su.pank.simplescanner"
-        minSdk = 24
+        minSdk = 31 // PDF service need 31 but we can use smth another (before 24)
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -70,6 +70,13 @@ android {
 
 dependencies {
 
+        implementation("androidx.pdf:pdf-viewer:1.0.0-alpha10")
+    implementation("androidx.pdf:pdf-document-service:1.0.0-alpha10")
+
+
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+
     implementation(libs.lottie.compose)
 
     implementation(libs.androidx.core.splashscreen)
@@ -100,6 +107,7 @@ dependencies {
 
 
     implementation(libs.hilt)
+    ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
 

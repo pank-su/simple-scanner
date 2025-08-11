@@ -23,13 +23,16 @@ protobufJavalite = "4.31.1"
 materail3 = "1.5.0-alpha01"
 koin = "4.1.0"
 hilt = "2.57"
-hilt-nav-compose = "1.2.0"
+hilt-ext = "1.2.0"
 ksp = "2.2.0-2.0.2"
+workRuntimeKtx = "2.10.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt-ext" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -59,8 +62,9 @@ koin-compose-viewmodel-navigation = { module = "io.insert-koin:koin-compose-view
 koin-android = {module = "io.insert-koin:koin-android", version.ref="koin"}
 
 hilt = {module = "com.google.dagger:hilt-android", version.ref="hilt"}
-hilt-compiler = {module="com.google.dagger:hilt-android-compiler", version.ref="hilt"}
-hilt-navigation-compose = {module="androidx.hilt:hilt-navigation-compose", version.ref="hilt-nav-compose"}
+hilt-android-compiler = {module="com.google.dagger:hilt-android-compiler", version.ref="hilt"}
+hilt-navigation-compose = {module="androidx.hilt:hilt-navigation-compose", version.ref="hilt-ext"}
+hilt-compiler = {module = "androidx.hilt:hilt-compiler", version.ref="hilt-ext"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

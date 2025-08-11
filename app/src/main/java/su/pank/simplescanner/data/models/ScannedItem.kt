@@ -2,7 +2,6 @@ package su.pank.simplescanner.data.models
 
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -10,20 +9,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.vectorResource
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
-import kotlinx.serialization.builtins.InstantComponentSerializer
 import su.pank.simplescanner.R
 import su.pank.simplescanner.proto.Extension
 import su.pank.simplescanner.proto.Scanned
-import su.pank.simplescanner.proto.ScansSettings
 import su.pank.simplescanner.proto.scanned
 import su.pank.simplescanner.proto.scansSettings
-import java.io.File
-import java.net.URI
-import java.util.Locale
 import kotlin.random.Random
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -33,7 +25,8 @@ import kotlin.time.Instant
 sealed interface ScannedItem {
     val name: String
     val savedAt: Instant
-    val preview: ImageBitmap
+
+
 
 
     fun toProtoModel(): Scanned
@@ -41,11 +34,10 @@ sealed interface ScannedItem {
     @Serializable
     data class PdfFile(
         override val name: String,
-        override val savedAt: Instant, // ignore error
-        val file: String
+        val file: String,
+        override val savedAt: Instant = Clock.System.now(), // ignore error
     ) : ScannedItem {
-        override val preview: ImageBitmap
-            get() = TODO()
+
 
 
         override fun toProtoModel(): Scanned {
@@ -64,11 +56,10 @@ sealed interface ScannedItem {
     @Serializable
     data class JpgItem(
         override val name: String,
-        override val savedAt: Instant,
-        val files: List<String>
+        val files: List<String>,
+        override val savedAt: Instant = Clock.System.now(), // ignore error
     ) : ScannedItem {
-        override val preview: ImageBitmap
-            get() = BitmapFactory.decodeFile(files.first()).asImageBitmap()
+
 
 
         override fun toProtoModel(): Scanned {
@@ -98,10 +89,7 @@ class TestItem(private val context: Context, override val name: String = "Test")
 
     @OptIn(ExperimentalTime::class)
     override val savedAt: Instant = Clock.System.now() - Random.nextInt(1, 30).seconds
-    override val preview: ImageBitmap
-        get() {
-            return ImageBitmap.imageResource(context.resources, R.drawable.photo)
-        }
+
 
     override fun toProtoModel(): Scanned = scanned { }
 
