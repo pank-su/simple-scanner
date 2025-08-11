@@ -14,17 +14,16 @@ import kotlin.time.Instant
 /**
  * Сохранённые сканы
  */
-
 class ScansRepository @Inject constructor(private val scansDataStore: DataStore<Scans>) {
 
     val scans = scansDataStore.data.map {
         it.scansList.mapNotNull { it.toDataModel() }
     }
 
-    suspend fun addScan(scanned: ScannedItem) {
+    suspend fun addScan(item: ScannedItem) {
 
         scansDataStore.updateData {
-            it.toBuilder().addScans(scanned.toProtoModel()).build()
+            it.toBuilder().addScans(item.toProtoModel()).build()
         }
 
     }
@@ -40,7 +39,7 @@ private fun Scanned.toDataModel(): ScannedItem? {
             ScannedItem.PdfFile(
                 name,
                 Instant.fromEpochMilliseconds(savedAsMs),
-                File(fileNamesList.first())
+                fileNamesList.first()
             )
         }
 
@@ -48,7 +47,7 @@ private fun Scanned.toDataModel(): ScannedItem? {
             ScannedItem.JpgItem(
                 name,
                 Instant.fromEpochMilliseconds(savedAsMs),
-                fileNamesList.map { File(it) })
+                fileNamesList.map { it })
         }
 
         else -> {

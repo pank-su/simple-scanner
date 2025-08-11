@@ -2,12 +2,16 @@ package su.pank.simplescanner.data.models
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.vectorResource
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.builtins.InstantComponentSerializer
 import su.pank.simplescanner.R
 import su.pank.simplescanner.proto.Extension
 import su.pank.simplescanner.proto.Scanned
@@ -15,6 +19,7 @@ import su.pank.simplescanner.proto.ScansSettings
 import su.pank.simplescanner.proto.scanned
 import su.pank.simplescanner.proto.scansSettings
 import java.io.File
+import java.net.URI
 import java.util.Locale
 import kotlin.random.Random
 import kotlin.time.Clock
@@ -23,6 +28,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+@Serializable
 @OptIn(ExperimentalTime::class)
 sealed interface ScannedItem {
     val name: String
@@ -32,10 +38,11 @@ sealed interface ScannedItem {
 
     fun toProtoModel(): Scanned
 
+    @Serializable
     data class PdfFile(
         override val name: String,
-        override val savedAt: Instant,
-        val file: File
+        override val savedAt: Instant, // ignore error
+        val file: String
     ) : ScannedItem {
         override val preview: ImageBitmap
             get() = TODO()
@@ -46,7 +53,7 @@ sealed interface ScannedItem {
             return scanned {
                 this.name = this@PdfFile.name
                 savedAsMs = savedAt.toEpochMilliseconds()
-                fileNames.add(file.name)
+                fileNames.add(file)
                 scanSettings = scansSettings {
                     extension = Extension.PDF
                 }
@@ -54,20 +61,21 @@ sealed interface ScannedItem {
         }
     }
 
+    @Serializable
     data class JpgItem(
         override val name: String,
         override val savedAt: Instant,
-        val files: List<File>
+        val files: List<String>
     ) : ScannedItem {
         override val preview: ImageBitmap
-            get() = BitmapFactory.decodeFile(files.first().path).asImageBitmap()
+            get() = BitmapFactory.decodeFile(files.first()).asImageBitmap()
 
 
         override fun toProtoModel(): Scanned {
             return scanned {
                 this.name = this@JpgItem.name
                 savedAsMs = savedAt.toEpochMilliseconds()
-                fileNames.addAll(files.map { it.name })
+                fileNames.addAll(files.map { it })
                 scanSettings = scansSettings {
                     extension = Extension.JPG
                 }
