@@ -1,13 +1,6 @@
 package su.pank.simplescanner.data.models
 
-import android.content.Context
-import android.graphics.BitmapFactory
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.res.vectorResource
+import androidx.core.net.toUri
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
@@ -17,7 +10,6 @@ import su.pank.simplescanner.proto.scanned
 import su.pank.simplescanner.proto.scansSettings
 import kotlin.random.Random
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -28,8 +20,6 @@ sealed interface ScannedItem {
     val savedAt: Instant
 
 
-
-
     fun toProtoModel(): Scanned
 
     @SerialName("pdf")
@@ -37,9 +27,9 @@ sealed interface ScannedItem {
     data class PdfFile(
         override val name: String,
         val file: String,
+        val pages: Int,
         override val savedAt: Instant = Clock.System.now(), // ignore error
     ) : ScannedItem {
-
 
 
         override fun toProtoModel(): Scanned {
@@ -64,12 +54,12 @@ sealed interface ScannedItem {
     ) : ScannedItem {
 
 
-
         override fun toProtoModel(): Scanned {
             return scanned {
                 this.name = this@JpgItem.name
                 savedAsMs = savedAt.toEpochMilliseconds()
                 fileNames.addAll(files.map { it })
+                pages = files.size
                 scanSettings = scansSettings {
                     extension = Extension.JPG
                 }
@@ -80,22 +70,14 @@ sealed interface ScannedItem {
     }
 }
 
-/**
- * Item for preview and testing
- */
-class TestItem(private val context: Context, override val name: String = "Test") : ScannedItem {
 
-    val icon: ImageVector
-        @Composable get() {
-            return ImageVector.vectorResource(R.drawable.pdf_icon)
-        }
-
-    @OptIn(ExperimentalTime::class)
-    override val savedAt: Instant = Clock.System.now() - Random.nextInt(1, 30).seconds
-
-
-    override fun toProtoModel(): Scanned = scanned { }
-
-}
-
-
+@OptIn(ExperimentalTime::class)
+val TestItem = ScannedItem.JpgItem(
+    "Test ${Random.nextInt(1, 100)}",
+    listOf(
+        ("android.resource://su.pank.simplescanner/" + R.drawable.photo).toUri().toString(),
+        ("android.resource://su.pank.simplescanner/" + R.drawable.photo).toUri().toString(),
+        ("android.resource://su.pank.simplescanner/" + R.drawable.photo).toUri().toString(),
+        ("android.resource://su.pank.simplescanner/" + R.drawable.photo).toUri().toString()
+    )
+)

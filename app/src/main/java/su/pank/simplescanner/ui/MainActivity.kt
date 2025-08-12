@@ -7,10 +7,10 @@ import android.view.View
 import android.view.animation.AnticipateInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBars
@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
             animator.start()
         }
 
-        // FIX: System bar colors
+
 
         viewModel.checkGoogleServicesAndLoadData(this)
 
@@ -82,14 +82,8 @@ class MainActivity : ComponentActivity() {
             val updateString = stringResource(R.string.error_no_services)
 
             SimpleScannerTheme {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.surface)
-                )
                 ScannerNavHost(onRestart = ::restartApp, navController = navController)
-                //StatusBarProtection()
-
+                StatusBarProtection()
 
                 LaunchedEffect(state) {
                     if (state is MainActivityState.Loading) {
@@ -100,16 +94,19 @@ class MainActivity : ComponentActivity() {
                         when (state) {
                             is MainActivityState.Error -> SplashError((state as MainActivityState.Error).message)
                             MainActivityState.Loading -> Splash
-                            MainActivityState.NeedInstallGoogleServices -> SplashError(updateString) // TODO: maybe use update google services dialog
+                            MainActivityState.NeedInstallGoogleServices -> SplashError(
+                                updateString
+                            ) // TODO: maybe use update google services dialog
                             is MainActivityState.Success -> Main
                         }
                     )
                 }
 
-
             }
+
         }
     }
+
 
     fun restartApp() {
         val intent: Intent = Intent(this, MainActivity::class.java)
@@ -149,5 +146,5 @@ private fun StatusBarProtection(
 fun calculateGradientHeight(): () -> Float {
     val statusBars = WindowInsets.statusBars
     val density = LocalDensity.current
-    return { statusBars.getTop(density).times(1.2f) }
+    return { statusBars.getTop(density).times(1.5f) }
 }

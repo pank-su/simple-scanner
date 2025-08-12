@@ -22,6 +22,7 @@ message Scanned{
   repeated string fileNames = 2;
   string path = 3;
   int64 savedAsMs = 4;
+  int32 pages = 5;
   ScansSettings scanSettings = 6;
 }
 

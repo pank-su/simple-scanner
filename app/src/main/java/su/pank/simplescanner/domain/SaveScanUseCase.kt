@@ -5,7 +5,6 @@ import androidx.core.net.toFile
 import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import su.pank.simplescanner.data.models.ScannedItem
-import su.pank.simplescanner.data.models.TestItem
 import su.pank.simplescanner.data.scans.ScansRepository
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
@@ -31,7 +30,6 @@ class SaveScanUseCase @Inject constructor(
                 val file = saveLocal(scannedItem.name, scannedItem.file)
                 ScansRepository.saveScan(scannedItem.copy(file = file))
             }
-            is TestItem -> TODO("Test item not needed save")
         }
     }
 

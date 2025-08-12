@@ -37,8 +37,8 @@ private fun Scanned.toDataModel(): ScannedItem? {
         "PDF" -> {
             ScannedItem.PdfFile(
                 name,
-
                 fileNamesList.first(),
+                pages,
                 Instant.fromEpochMilliseconds(savedAsMs)
             )
         }

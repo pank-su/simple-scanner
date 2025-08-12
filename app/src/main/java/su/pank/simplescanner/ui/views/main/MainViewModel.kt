@@ -89,7 +89,7 @@ class MainViewModel @Inject constructor(
 
     fun saveFile(result: GmsDocumentScanningResult, context: Context): ScannedItem {
         val file: ScannedItem? = if (result.pdf?.uri != null) {
-            ScannedItem.PdfFile("Test", result.pdf!!.uri.toString())
+            ScannedItem.PdfFile("Test",   result.pdf!!.uri.toString(), result.pdf?.pageCount!! ,)
         } else if (result.pages != null) {
             ScannedItem.JpgItem("Test", result.pages!!.map { it.imageUri.toString() })
         } else null

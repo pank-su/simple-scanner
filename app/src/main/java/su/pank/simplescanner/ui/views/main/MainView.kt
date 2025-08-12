@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -47,7 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanner
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
-import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_PDF
+import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.SCANNER_MODE_FULL
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
@@ -118,7 +119,7 @@ fun MainRoute(
             if (activity != null)
                 viewModel.scan(
                     activity, GmsDocumentScannerOptions.Builder().setGalleryImportAllowed(true)
-                        .setResultFormats(RESULT_FORMAT_PDF).build(), launcher
+                        .setResultFormats(RESULT_FORMAT_JPEG).build(), launcher
                 )
         },
         onListViewOpen
@@ -130,7 +131,7 @@ fun MainRoute(
 fun rememberScannerClient(): GmsDocumentScanner {
     return remember {
         val options = GmsDocumentScannerOptions.Builder().setGalleryImportAllowed(true)
-            .setResultFormats(RESULT_FORMAT_PDF).setScannerMode(SCANNER_MODE_FULL).build()
+            .setResultFormats(RESULT_FORMAT_JPEG).setScannerMode(SCANNER_MODE_FULL).build()
 
         return@remember GmsDocumentScanning.getClient(options)
     }
@@ -276,14 +277,10 @@ fun MainViewPreview() {
 
                 ScansUiState.Success(
                     listOf(
-                        TestItem(context),
-                        TestItem(context),
-                        TestItem(context),
-                        TestItem(context),
-                        TestItem(context)
+                        TestItem, TestItem, TestItem
                     ), Clock.System.now()
                 ),
-                ScansSettingsUiState.Success(scansSettings { }),{},
+                ScansSettingsUiState.Success(scansSettings { }), {},
                 {}) { }
         }
     }

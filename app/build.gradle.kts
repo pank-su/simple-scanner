@@ -69,9 +69,9 @@ android {
 }
 
 dependencies {
+    implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
 
-        implementation("androidx.pdf:pdf-viewer:1.0.0-alpha10")
-    implementation("androidx.pdf:pdf-document-service:1.0.0-alpha10")
 
 
     implementation(libs.androidx.work.runtime.ktx)

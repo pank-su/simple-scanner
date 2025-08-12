@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SimpleScanner"
         android:name=".MainApplication"
-        tools:targetApi="31">
+        android:enableOnBackInvokedCallback="true"
+        tools:targetApi="33">
 
 
         <meta-data

@@ -1,13 +1,9 @@
 package su.pank.simplescanner.ui.components
 
-import android.graphics.BitmapFactory
-import android.util.Size
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -27,17 +23,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -46,15 +36,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.pdf.SandboxedPdfLoader
+import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import su.pank.simplescanner.R
 import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.data.models.TestItem
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 import su.pank.simplescanner.utils.DarkLightPreview
+import su.pank.simplescanner.utils.LocalNavAnimatedVisibilityScope
+import su.pank.simplescanner.utils.LocalSharedTransitionScope
 import su.pank.simplescanner.utils.LocalePreview
+import su.pank.simplescanner.utils.currentOrThrow
 import su.pank.simplescanner.utils.rememberTimeFormatter
-import java.io.File
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -121,15 +114,12 @@ private fun EmptyState() {
     }
 }
 
-@OptIn(ExperimentalTime::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalTime::class, ExperimentalMaterial3Api::class,
+    ExperimentalSharedTransitionApi::class
+)
 @Composable
 fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (ScannedItem) -> Unit) {
     val timeFormatter = rememberTimeFormatter()
-    val context = LocalContext.current
-
-    val pdfLoader = remember {
-        SandboxedPdfLoader(context)
-    }
 
 
     val state = rememberCarouselState { scans.size }
@@ -163,40 +153,6 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
                 .fillMaxSize()
                 .maskClip(MaterialTheme.shapes.medium)
         ) {
-            var preview: ImageBitmap? by remember {
-                mutableStateOf(
-                    null
-                )
-            }
-
-            LaunchedEffect(item) {
-                when (item) {
-                    is ScannedItem.JpgItem -> {
-                        val files = item.files
-                        val file = files.firstOrNull()
-                        if (file == null) {
-                            preview = null
-                        }
-                        preview = BitmapFactory.decodeFile(files.first())
-                            .asImageBitmap()
-                    }
-
-                    is ScannedItem.PdfFile -> {
-
-                        preview =
-                            pdfLoader.openDocument(File(item.file).toUri()).getPageBitmapSource(0)
-                                .getBitmap(
-                                    Size(1000, 1000)
-                                ).asImageBitmap()
-
-                    }
-
-                    is TestItem -> {
-                        preview = BitmapFactory.decodeResource(context.resources, R.drawable.photo)
-                            .asImageBitmap()
-                    }
-                }
-            }
 
             Column(
                 Modifier
@@ -210,20 +166,25 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
                             RoundedCornerShape(4.dp)
                         )
                 ) {
-                    if (preview != null) {
-                        Image(
-                            preview!!,
-                            contentDescription = "pdf image",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.surfaceContainer)
-                        )
-                    }
+                    val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
+                    val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
+                    with(sharedTransitionScope) {
+                    AsyncImage(
+                        when (item) {
+                            is ScannedItem.JpgItem -> item.files.firstOrNull()?.toUri()
+                            is ScannedItem.PdfFile -> item.file.toUri()
+                        },
+                        contentDescription = "preview",
+                        modifier = Modifier.sharedElement(
+                            sharedTransitionScope.rememberSharedContentState(when (item) {
+                                is ScannedItem.JpgItem -> "${item.files.firstOrNull()}0"
+                                is ScannedItem.PdfFile -> "${item.file}0"
+                            }),
+                            animatedVisibilityScope = animatedContentScope
+                        ).fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+
+                    )}
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
@@ -246,7 +207,6 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
                             contentDescription = "File extension"
                         )
 
-                        is TestItem -> Icon(item.icon, "")
                     }
                 }
             }
@@ -262,11 +222,10 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
 fun ScansCarouselPreview() {
     val context = LocalContext.current
     val scans = listOf<ScannedItem>(
-        TestItem(context),
-        TestItem(context),
-        TestItem(context),
-        TestItem(context),
-        TestItem(context)
+        TestItem,
+        TestItem,
+        TestItem,
+        TestItem
     )
     SimpleScannerTheme {
         ScansCarousel(
