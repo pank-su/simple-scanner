@@ -59,7 +59,7 @@ fun PageCarousel(pages: List<ImageBitmap>, modifier: Modifier = Modifier) {
                 )
                 .padding(10.dp)
         ) {
-            if (pages.size > 12) {
+            if (pages.size > 10) {
                 Text("${state.currentItem + 1}/${pages.size}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
             } else {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {

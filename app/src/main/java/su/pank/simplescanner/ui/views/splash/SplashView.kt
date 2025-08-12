@@ -1,10 +1,6 @@
 package su.pank.simplescanner.ui.views.splash
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,23 +11,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
+import su.pank.simplescanner.utils.LocalNavAnimatedVisibilityScope
+import su.pank.simplescanner.utils.LocalSharedTransitionScope
+import su.pank.simplescanner.utils.SharedElementScopeCompositionLocal
+import su.pank.simplescanner.utils.currentOrThrow
 
 @Serializable
 object Splash
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SplashView(
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
-) {
+fun SplashView() {
+    val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
+    val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
+
     with(sharedTransitionScope) {
         Box(
             modifier = Modifier
@@ -73,10 +72,8 @@ fun SplashView(
 @Composable
 fun SplashViewPreview() {
     SimpleScannerTheme {
-        SharedTransitionLayout {
-            AnimatedContent(true) { _ ->
-                SplashView(this@SharedTransitionLayout, this@AnimatedContent)
-            }
+        SharedElementScopeCompositionLocal {
+            SplashView()
         }
 
     }

@@ -4,11 +4,7 @@ import android.app.Activity.RESULT_OK
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -64,7 +60,11 @@ import su.pank.simplescanner.ui.components.ScansCarousel
 import su.pank.simplescanner.ui.components.ScansUiState
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 import su.pank.simplescanner.utils.DarkLightPreview
+import su.pank.simplescanner.utils.LocalNavAnimatedVisibilityScope
+import su.pank.simplescanner.utils.LocalSharedTransitionScope
 import su.pank.simplescanner.utils.LocalePreview
+import su.pank.simplescanner.utils.SharedElementScopeCompositionLocal
+import su.pank.simplescanner.utils.currentOrThrow
 import java.io.File
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -76,10 +76,8 @@ object Main
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainRoute(
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
     onListViewOpen: () -> Unit,
-    onSuccessScan: (ScannedItem) -> Unit,
+    selectScan: (ScannedItem) -> Unit,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -92,7 +90,7 @@ fun MainRoute(
             val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
             if (result != null) {
                 val scanItem: ScannedItem = viewModel.saveFile(result, context)
-                onSuccessScan(scanItem)
+                selectScan(scanItem)
                 return@rememberLauncherForActivityResult
 
             }
@@ -113,14 +111,16 @@ fun MainRoute(
     val settingUiState by viewModel.settingsUiState.collectAsStateWithLifecycle()
 
     MainView(
-        sharedTransitionScope,
-        animatedContentScope,
         scansUiState,
         settingUiState,
+        selectScan,
         {
             if (activity != null)
-            viewModel.scan(activity, GmsDocumentScannerOptions.Builder().setGalleryImportAllowed(true)
-                .setResultFormats(RESULT_FORMAT_PDF).build(), launcher) },
+                viewModel.scan(
+                    activity, GmsDocumentScannerOptions.Builder().setGalleryImportAllowed(true)
+                        .setResultFormats(RESULT_FORMAT_PDF).build(), launcher
+                )
+        },
         onListViewOpen
     )
 
@@ -146,14 +146,14 @@ fun rememberScannerClient(): GmsDocumentScanner {
 )
 @Composable
 fun MainView(
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
     scansUiState: ScansUiState,
     settingUiState: ScansSettingsUiState,
+    selectScan: (ScannedItem) -> Unit,
     scan: () -> Unit,
     onListViewOpen: () -> Unit
 ) {
-
+    val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
+    val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
 
     Scaffold(topBar = {
         TopAppBar(title = {
@@ -175,10 +175,11 @@ fun MainView(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                ScansCarousel(scansUiState, {}, modifier = Modifier.fillMaxWidth())
+                ScansCarousel(scansUiState, selectScan, modifier = Modifier.fillMaxWidth())
             }
 
             item {
+
                 with(sharedTransitionScope) {
 
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -270,22 +271,21 @@ fun MainViewPreview() {
     val context = LocalContext.current
 
     SimpleScannerTheme {
-        SharedTransitionLayout {
-            AnimatedContent(true) { _ ->
-                MainView(
-                    this@SharedTransitionLayout, this@AnimatedContent,
-                    ScansUiState.Success(
-                        listOf(
-                            TestItem(context),
-                            TestItem(context),
-                            TestItem(context),
-                            TestItem(context),
-                            TestItem(context)
-                        ), Clock.System.now()
-                    ),
-                    ScansSettingsUiState.Success(scansSettings { }),
-                    {}) { }
-            }
+        SharedElementScopeCompositionLocal {
+            MainView(
+
+                ScansUiState.Success(
+                    listOf(
+                        TestItem(context),
+                        TestItem(context),
+                        TestItem(context),
+                        TestItem(context),
+                        TestItem(context)
+                    ), Clock.System.now()
+                ),
+                ScansSettingsUiState.Success(scansSettings { }),{},
+                {}) { }
         }
     }
 }
+
