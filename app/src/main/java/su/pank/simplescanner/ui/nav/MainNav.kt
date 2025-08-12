@@ -13,7 +13,7 @@ import androidx.navigation.toRoute
 import su.pank.simplescanner.ui.views.main.Main
 import su.pank.simplescanner.ui.views.main.MainRoute
 import su.pank.simplescanner.ui.views.scan.Scan
-import su.pank.simplescanner.ui.views.scan.scanScreen
+import su.pank.simplescanner.ui.views.scan.ScanRoute
 import su.pank.simplescanner.ui.views.splash.Splash
 import su.pank.simplescanner.ui.views.splash.SplashView
 import su.pank.simplescanner.ui.views.splash_error.SplashError
@@ -61,7 +61,13 @@ fun ScannerNavHost(
                         })
                     }
                 }
+                composable<Scan>(typeMap = Scan.typeMap) { entry ->
+                    AnimatedScopeProvider {
+                        ScanRoute()
+                    }
+                }
             }
+
 
         }
 
