@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.vectorResource
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
 import su.pank.simplescanner.proto.Extension
@@ -31,6 +32,7 @@ sealed interface ScannedItem {
 
     fun toProtoModel(): Scanned
 
+    @SerialName("pdf")
     @Serializable
     data class PdfFile(
         override val name: String,
@@ -53,6 +55,7 @@ sealed interface ScannedItem {
         }
     }
 
+    @SerialName("jpg")
     @Serializable
     data class JpgItem(
         override val name: String,
