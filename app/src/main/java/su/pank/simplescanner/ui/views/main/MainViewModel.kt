@@ -2,6 +2,7 @@ package su.pank.simplescanner.ui.views.main
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.lifecycle.ViewModel
@@ -34,6 +35,7 @@ import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
+
 @OptIn(ExperimentalTime::class)
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -46,6 +48,7 @@ class MainViewModel @Inject constructor(
         if (scans.isEmpty()) {
             return@combine ScansUiState.Empty
         }
+        Log.d("MainViewModel", "scansUiState: $scans")
         ScansUiState.Success(scans, time)
     }.catch { ScansUiState.Error }.stateIn(
         viewModelScope,
@@ -89,7 +92,7 @@ class MainViewModel @Inject constructor(
 
     fun saveFile(result: GmsDocumentScanningResult, context: Context): ScannedItem {
         val file: ScannedItem? = if (result.pdf?.uri != null) {
-            ScannedItem.PdfFile("Test",   result.pdf!!.uri.toString(), result.pdf?.pageCount!! ,)
+            ScannedItem.PdfFile("Test", result.pdf!!.uri.toString(), result.pdf?.pageCount!!)
         } else if (result.pages != null) {
             ScannedItem.JpgItem("Test", result.pages!!.map { it.imageUri.toString() })
         } else null

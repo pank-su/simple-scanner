@@ -43,6 +43,7 @@ import su.pank.simplescanner.R
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 import su.pank.simplescanner.utils.LocalNavAnimatedVisibilityScope
 import su.pank.simplescanner.utils.LocalSharedTransitionScope
+import su.pank.simplescanner.utils.SharedElementScopeCompositionLocal
 import su.pank.simplescanner.utils.currentOrThrow
 
 @OptIn(
@@ -58,30 +59,47 @@ fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Mo
     val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
 
     val rounderCornerAnim by animatedContentScope.transition.animateDp(label = "rounded corners") { enterExitState ->
-        when (enterExitState){
+        when (enterExitState) {
             EnterExitState.PreEnter -> 4.dp
             EnterExitState.Visible -> 28.dp
             EnterExitState.PostExit -> 28.dp
         }
     }
     val state = rememberCarouselState { size }
-    if (size == 1){
+    if (size == 1) {
         with(sharedTransitionScope) {
 
             Box(
-                modifier = Modifier.sharedBounds(
-                    sharedTransitionScope.rememberSharedContentState(AnimKeys.containerKey(0, key)),
-                    animatedContentScope,
-                    clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(rounderCornerAnim)),
-                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                ).clip(RoundedCornerShape(28.dp)).fillMaxSize()
+                modifier = Modifier
+                    .sharedBounds(
+                        sharedTransitionScope.rememberSharedContentState(
+                            AnimKeys.containerKey(
+                                0,
+                                key
+                            )
+                        ),
+                        animatedContentScope,
+                        clipInOverlayDuringTransition = OverlayClip(
+                            RoundedCornerShape(
+                                rounderCornerAnim
+                            )
+                        ),
+                        resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                    )
+                    .clip(RoundedCornerShape(28.dp))
+                    .fillMaxSize()
             ) {
                 AsyncImage(
                     pages[0],
                     contentDescription = "page",
                     modifier = Modifier
                         .sharedElement(
-                            sharedTransitionScope.rememberSharedContentState(key = AnimKeys.pageKey(0, key)),
+                            sharedTransitionScope.rememberSharedContentState(
+                                key = AnimKeys.pageKey(
+                                    0,
+                                    key
+                                )
+                            ),
                             animatedContentScope,
                         )
                         .fillMaxSize(),
@@ -93,8 +111,6 @@ fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Mo
     }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
-
-
 
 
         with(sharedTransitionScope) {
@@ -109,24 +125,42 @@ fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Mo
 
                 val page = pages[it]
 
-                Box(modifier = Modifier.sharedBounds(
-                    sharedTransitionScope.rememberSharedContentState(AnimKeys.containerKey(it, key)),
-                    animatedContentScope,
-                    clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(rounderCornerAnim)),
+                Box(
+                    modifier = Modifier
+                        .sharedBounds(
+                            sharedTransitionScope.rememberSharedContentState(
+                                AnimKeys.containerKey(
+                                    it,
+                                    key
+                                )
+                            ),
+                            animatedContentScope,
+                            clipInOverlayDuringTransition = OverlayClip(
+                                RoundedCornerShape(
+                                    rounderCornerAnim
+                                )
+                            ),
 
-                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
 
-                ).maskClip(RoundedCornerShape(28.dp)).fillMaxSize()) {
+                        )
+                        .maskClip(RoundedCornerShape(28.dp))
+                        .fillMaxSize()
+                ) {
                     AsyncImage(
                         page,
                         contentDescription = "page",
                         modifier = Modifier
                             .sharedElement(
-                                sharedTransitionScope.rememberSharedContentState(key = AnimKeys.pageKey(it, key)),
+                                sharedTransitionScope.rememberSharedContentState(
+                                    key = AnimKeys.pageKey(
+                                        it,
+                                        key
+                                    )
+                                ),
                                 animatedContentScope,
                             )
-                            .fillMaxSize()
-                           ,
+                            .fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
                 }
@@ -175,14 +209,22 @@ fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Mo
 private fun PageCarouselPreview() {
     val photo = ImageBitmap.imageResource(id = R.drawable.photo)
     SimpleScannerTheme {
-        PageCarousel(
-            listOf(
-                ImageRequest.Builder(LocalContext.current).data(R.drawable.photo).build()
+        SharedElementScopeCompositionLocal {
+
+            PageCarousel(
+                listOf(
+                    ImageRequest.Builder(LocalContext.current).data(R.drawable.photo).build(),
+                    ImageRequest.Builder(LocalContext.current).data(R.drawable.photo).build(),
+                            ImageRequest . Builder (LocalContext.current).data(R.drawable.photo)
+                        .build(),
+                    ImageRequest . Builder (LocalContext.current).data(R.drawable.photo)
+                        .build()
 
 
-            ),
-            "test",
-            modifier = Modifier.aspectRatio(230f / 300f)
-        )
+                ),
+                "test",
+                modifier = Modifier.aspectRatio(230f / 300f)
+            )
+        }
     }
 }

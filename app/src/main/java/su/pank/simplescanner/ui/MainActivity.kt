@@ -99,7 +99,11 @@ class MainActivity : ComponentActivity() {
                             ) // TODO: maybe use update google services dialog
                             is MainActivityState.Success -> Main
                         }
-                    )
+                    ){
+                        popUpTo(Splash) {
+                            inclusive = true
+                        }
+                    }
                 }
 
             }

@@ -69,6 +69,9 @@ android {
 }
 
 dependencies {
+    implementation("me.saket.telephoto:zoomable-image-coil3:0.16.0")
+    implementation("me.saket.telephoto:zoomable-peek-overlay:0.16.0")
+
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
 
@@ -107,6 +110,7 @@ dependencies {
 
 
     implementation(libs.hilt)
+    implementation(libs.androidx.foundation)
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
