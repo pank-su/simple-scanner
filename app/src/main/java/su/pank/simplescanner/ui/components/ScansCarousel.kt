@@ -142,8 +142,8 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
         }
         val key = remember {
             when (item) {
-                is ScannedItem.JpgItem -> "${item.files.firstOrNull()}0"
-                is ScannedItem.PdfFile -> "${item.file}0"
+                is ScannedItem.JpgItem -> "${item.files.firstOrNull()}"
+                is ScannedItem.PdfFile -> "${item.file}"
             }
         }
         val timeText by remember(timeNow) {
@@ -185,7 +185,7 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
                     Box(
                         modifier = Modifier
                             .sharedBounds(
-                                sharedTransitionScope.rememberSharedContentState("container $key"),
+                                sharedTransitionScope.rememberSharedContentState(AnimKeys.containerKey(0, key)),
                                 animatedContentScope,
                                 clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(rounderCornerAnim)),
                                 resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
@@ -202,7 +202,7 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
                             modifier = Modifier
                                 .sharedElement(
                                     sharedTransitionScope.rememberSharedContentState(
-                                        key
+                                        AnimKeys.pageKey(0, key)
                                     ),
                                     animatedVisibilityScope = animatedContentScope,
                                 )

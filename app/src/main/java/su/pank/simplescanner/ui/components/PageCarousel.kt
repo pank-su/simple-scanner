@@ -70,7 +70,7 @@ fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Mo
 
             Box(
                 modifier = Modifier.sharedBounds(
-                    sharedTransitionScope.rememberSharedContentState("container ${key}0"),
+                    sharedTransitionScope.rememberSharedContentState(AnimKeys.containerKey(0, key)),
                     animatedContentScope,
                     clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(rounderCornerAnim)),
                     resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
@@ -81,7 +81,7 @@ fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Mo
                     contentDescription = "page",
                     modifier = Modifier
                         .sharedElement(
-                            sharedTransitionScope.rememberSharedContentState(key = "${key}0"),
+                            sharedTransitionScope.rememberSharedContentState(key = AnimKeys.pageKey(0, key)),
                             animatedContentScope,
                         )
                         .fillMaxSize(),
@@ -110,7 +110,7 @@ fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Mo
                 val page = pages[it]
 
                 Box(modifier = Modifier.sharedBounds(
-                    sharedTransitionScope.rememberSharedContentState("container ${key}${it}"),
+                    sharedTransitionScope.rememberSharedContentState(AnimKeys.containerKey(it, key)),
                     animatedContentScope,
                     clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(rounderCornerAnim)),
 
@@ -122,7 +122,7 @@ fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Mo
                         contentDescription = "page",
                         modifier = Modifier
                             .sharedElement(
-                                sharedTransitionScope.rememberSharedContentState(key = "$key$it"),
+                                sharedTransitionScope.rememberSharedContentState(key = AnimKeys.pageKey(it, key)),
                                 animatedContentScope,
                             )
                             .fillMaxSize()
