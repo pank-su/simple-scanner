@@ -13,7 +13,7 @@ import su.pank.simplescanner.coil.pdf.PdfDecoder
 import javax.inject.Inject
 
 @HiltAndroidApp
-class MainApplication: Application(), SingletonImageLoader.Factory  {
+class MainApplication: Application(), SingletonImageLoader.Factory, Configuration.Provider  {
 
 
 
@@ -29,6 +29,11 @@ class MainApplication: Application(), SingletonImageLoader.Factory  {
             }
             .build()
     }
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setMinimumLoggingLevel(android.util.Log.INFO)
+            .build()
 
 
 }
