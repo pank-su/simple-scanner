@@ -1,6 +1,9 @@
 package su.pank.simplescanner.ui.components
 
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.animateDp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,9 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import coil3.compose.AsyncImage
-import coil3.compose.AsyncImagePainter
 import su.pank.simplescanner.R
 import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.data.models.TestItem
@@ -114,14 +115,14 @@ private fun EmptyState() {
     }
 }
 
-@OptIn(ExperimentalTime::class, ExperimentalMaterial3Api::class,
+@OptIn(
+    ExperimentalTime::class, ExperimentalMaterial3Api::class,
     ExperimentalSharedTransitionApi::class
 )
 @Composable
 fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (ScannedItem) -> Unit) {
     val timeFormatter = rememberTimeFormatter()
-
-
+    val context = LocalContext.current
     val state = rememberCarouselState { scans.size }
 
 
@@ -135,6 +136,15 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
         if (item == null) {
             Spacer(Modifier.fillMaxSize())
             return@HorizontalMultiBrowseCarousel
+        }
+        val preview = remember {
+            item.imageRequests(context).firstOrNull()?.build()
+        }
+        val key = remember {
+            when (item) {
+                is ScannedItem.JpgItem -> "${item.files.firstOrNull()}0"
+                is ScannedItem.PdfFile -> "${item.file}0"
+            }
         }
         val timeText by remember(timeNow) {
             derivedStateOf {
@@ -159,33 +169,50 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
                     .padding(10.dp)
                     .fillMaxSize()
             ) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .maskClip(
-                            RoundedCornerShape(4.dp)
-                        )
-                ) {
-                    val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
-                    val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
-                    with(sharedTransitionScope) {
-                    AsyncImage(
-                        when (item) {
-                            is ScannedItem.JpgItem -> item.files.firstOrNull()?.toUri()
-                            is ScannedItem.PdfFile -> item.file.toUri()
-                        },
-                        contentDescription = "preview",
-                        modifier = Modifier.sharedElement(
-                            sharedTransitionScope.rememberSharedContentState(when (item) {
-                                is ScannedItem.JpgItem -> "${item.files.firstOrNull()}0"
-                                is ScannedItem.PdfFile -> "${item.file}0"
-                            }),
-                            animatedVisibilityScope = animatedContentScope
-                        ).fillMaxSize(),
-                        contentScale = ContentScale.Crop,
 
-                    )}
+                val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
+                val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
+                val rounderCornerAnim by animatedContentScope.transition.animateDp(label = "rounded corners") { enterExitState ->
+                    when (enterExitState){
+                        EnterExitState.PreEnter -> 28.dp
+                        EnterExitState.Visible -> 4.dp
+                        EnterExitState.PostExit -> 4.dp
+                    }
                 }
+
+                with(sharedTransitionScope) {
+
+                    Box(
+                        modifier = Modifier
+                            .sharedBounds(
+                                sharedTransitionScope.rememberSharedContentState("container $key"),
+                                animatedContentScope,
+                                clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(rounderCornerAnim)),
+                                resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                            )
+                            .maskClip(
+                                RoundedCornerShape(4.dp)
+                            )
+                            .weight(1f)
+                    ) {
+
+                        AsyncImage(
+                            preview,
+                            contentDescription = "preview",
+                            modifier = Modifier
+                                .sharedElement(
+                                    sharedTransitionScope.rememberSharedContentState(
+                                        key
+                                    ),
+                                    animatedVisibilityScope = animatedContentScope,
+                                )
+                                .fillMaxSize(),
+                            contentScale = ContentScale.Crop,
+
+                            )
+                    }
+                }
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(item.name, style = MaterialTheme.typography.titleSmall)

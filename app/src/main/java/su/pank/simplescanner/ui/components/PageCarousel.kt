@@ -1,12 +1,14 @@
 package su.pank.simplescanner.ui.components
 
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -28,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -51,39 +54,86 @@ fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Mo
     val size by remember {
         derivedStateOf { pages.size }
     }
-    val state = rememberCarouselState { size }
+    val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
+    val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
 
+    val rounderCornerAnim by animatedContentScope.transition.animateDp(label = "rounded corners") { enterExitState ->
+        when (enterExitState){
+            EnterExitState.PreEnter -> 4.dp
+            EnterExitState.Visible -> 28.dp
+            EnterExitState.PostExit -> 28.dp
+        }
+    }
+    val state = rememberCarouselState { size }
+    if (size == 1){
+        with(sharedTransitionScope) {
+
+            Box(
+                modifier = Modifier.sharedBounds(
+                    sharedTransitionScope.rememberSharedContentState("container ${key}0"),
+                    animatedContentScope,
+                    clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(rounderCornerAnim)),
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                ).clip(RoundedCornerShape(28.dp)).fillMaxSize()
+            ) {
+                AsyncImage(
+                    pages[0],
+                    contentDescription = "page",
+                    modifier = Modifier
+                        .sharedElement(
+                            sharedTransitionScope.rememberSharedContentState(key = "${key}0"),
+                            animatedContentScope,
+                        )
+                        .fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+        return
+    }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
-        HorizontalCenteredHeroCarousel(
-            state,
-            Modifier.weight(1f),
-            contentPadding = PaddingValues(horizontal = 10.dp),
-            itemSpacing = 8.dp
-        ) {
-            val page = pages[it]
-            val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
-            val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
-            with(sharedTransitionScope) {
-            Box(
-                modifier = Modifier.sharedElement(
-                    sharedTransitionScope.rememberSharedContentState(key = "$key$it"),
-                    animatedContentScope
-                )
-                    .fillMaxSize()
-                    .maskClip(MaterialTheme.shapes.extraLarge),
+
+
+
+
+        with(sharedTransitionScope) {
+
+            HorizontalCenteredHeroCarousel(
+                state,
+                Modifier
+                    .weight(1f),
+                //contentPadding = PaddingValues(horizontal = 10.dp),
+                itemSpacing = 8.dp
             ) {
 
+                val page = pages[it]
 
+                Box(modifier = Modifier.sharedBounds(
+                    sharedTransitionScope.rememberSharedContentState("container ${key}${it}"),
+                    animatedContentScope,
+                    clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(rounderCornerAnim)),
+
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+
+                ).maskClip(RoundedCornerShape(28.dp)).fillMaxSize()) {
                     AsyncImage(
                         page,
                         contentDescription = "page",
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .sharedElement(
+                                sharedTransitionScope.rememberSharedContentState(key = "$key$it"),
+                                animatedContentScope,
+                            )
+                            .fillMaxSize()
+                           ,
                         contentScale = ContentScale.Crop
                     )
                 }
 
             }
+
+
         }
         Spacer(Modifier.height(8.dp))
         Box(
@@ -136,4 +186,3 @@ private fun PageCarouselPreview() {
         )
     }
 }
-

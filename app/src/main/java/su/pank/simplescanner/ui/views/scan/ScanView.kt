@@ -6,16 +6,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
-import coil3.request.ImageRequest
 import coil3.request.crossfade
 import kotlinx.serialization.Serializable
-import su.pank.simplescanner.coil.pdf.pdfPageIndex
 import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.ui.components.PageCarousel
 import su.pank.simplescanner.utils.serializableType
@@ -41,6 +40,10 @@ fun ScanRoute(scanViewModel: ScanViewModel = hiltViewModel()) {
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ScanView(item: ScannedItem, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val images = remember {
+        item.imageRequests(context).map { it.crossfade(true).build() }
+    }
     Scaffold {
         Column(
             Modifier
@@ -49,24 +52,7 @@ fun ScanView(item: ScannedItem, modifier: Modifier = Modifier) {
                 .padding(12.dp)
         ) {
             PageCarousel(
-                pages = when (item) {
-                    is ScannedItem.JpgItem -> item.files.map {
-                        ImageRequest.Builder(LocalContext.current).data(it)
-                            .placeholderMemoryCacheKey(it)
-                            .memoryCacheKey(it)
-                    }
-
-                    is ScannedItem.PdfFile -> buildList {
-                        repeat(item.pages) {
-                            add(
-                                ImageRequest.Builder(LocalContext.current).data(item.file)
-                                    .placeholderMemoryCacheKey(item.file + "$it")
-                                    .memoryCacheKey(item.file + "$it")
-                                    .pdfPageIndex(it)
-                            )
-                        }
-                    }
-                }.map { it.crossfade(true).build() },
+                pages = images,
                 when (item) {
                     is ScannedItem.JpgItem -> item.files.first()
                     is ScannedItem.PdfFile -> item.file + "$it"

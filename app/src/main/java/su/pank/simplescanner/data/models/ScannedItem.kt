@@ -1,9 +1,12 @@
 package su.pank.simplescanner.data.models
 
+import android.content.Context
 import androidx.core.net.toUri
+import coil3.request.ImageRequest
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
+import su.pank.simplescanner.coil.pdf.pdfPageIndex
 import su.pank.simplescanner.proto.Extension
 import su.pank.simplescanner.proto.Scanned
 import su.pank.simplescanner.proto.scanned
@@ -19,6 +22,8 @@ sealed interface ScannedItem {
     val name: String
     val savedAt: Instant
 
+    fun imageRequests(context: Context): List<ImageRequest.Builder>
+
 
     fun toProtoModel(): Scanned
 
@@ -30,6 +35,18 @@ sealed interface ScannedItem {
         val pages: Int,
         override val savedAt: Instant = Clock.System.now(), // ignore error
     ) : ScannedItem {
+
+
+        override fun imageRequests(context: Context) = buildList {
+            repeat(pages) {
+                add(
+                    ImageRequest.Builder(context).data(file)
+                        .placeholderMemoryCacheKey(file + "$it")
+                        .memoryCacheKey(file + "$it")
+                        .pdfPageIndex(it)
+                )
+            }
+        }
 
 
         override fun toProtoModel(): Scanned {
@@ -52,6 +69,11 @@ sealed interface ScannedItem {
         val files: List<String>,
         override val savedAt: Instant = Clock.System.now(), // ignore error
     ) : ScannedItem {
+        override fun imageRequests(context: Context) = files.map {
+            ImageRequest.Builder(context).data(it)
+                .placeholderMemoryCacheKey(it)
+                .memoryCacheKey(it)
+        }
 
 
         override fun toProtoModel(): Scanned {
