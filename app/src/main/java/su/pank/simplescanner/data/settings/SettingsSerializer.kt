@@ -1,25 +1,25 @@
-package su.pank.simplescanner.data.preferences
+package su.pank.simplescanner.data.settings
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import com.google.protobuf.InvalidProtocolBufferException
-import su.pank.simplescanner.proto.UserPreferences
+import su.pank.simplescanner.proto.Settings
 import java.io.InputStream
 import java.io.OutputStream
 
-object UserPreferencesSerializer  : Serializer<UserPreferences> {
-    override val defaultValue: UserPreferences = UserPreferences.getDefaultInstance()
+object SettingsSerializer : Serializer<Settings> {
+    override val defaultValue: Settings = Settings.getDefaultInstance()
 
-    override suspend fun readFrom(input: InputStream): UserPreferences {
+    override suspend fun readFrom(input: InputStream): Settings {
         try {
-            return UserPreferences.parseFrom(input)
+            return Settings.parseFrom(input)
         } catch (exception: InvalidProtocolBufferException) {
             throw CorruptionException("Cannot read proto.", exception)
         }
     }
 
     override suspend fun writeTo(
-        t: UserPreferences,
+        t: Settings,
         output: OutputStream
     ) = t.writeTo(output)
 }

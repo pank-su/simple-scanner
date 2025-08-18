@@ -34,4 +34,5 @@ enum Extension{
 
 message ScansSettings{
   Extension extension = 1;
+  optional bool expanded = 3;
 }

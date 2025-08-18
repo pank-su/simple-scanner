@@ -2,7 +2,6 @@ package su.pank.simplescanner.ui.views.main
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.lifecycle.ViewModel
@@ -25,13 +24,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.json.Json
 import su.pank.simplescanner.data.models.ScannedItem
-import su.pank.simplescanner.data.preferences.UserPreferencesRepository
 import su.pank.simplescanner.data.scans.ScansRepository
+import su.pank.simplescanner.data.settings.SettingsRepository
+import su.pank.simplescanner.proto.Extension
 import su.pank.simplescanner.proto.ScansSettings
 import su.pank.simplescanner.ui.components.ScansUiState
 import su.pank.simplescanner.work.SaveScanWorker
 import javax.inject.Inject
 import kotlin.time.Clock
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
@@ -40,15 +41,14 @@ import kotlin.time.ExperimentalTime
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val scansRepository: ScansRepository,
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val settingsRepository: SettingsRepository
 ) :
     ViewModel() {
 
-    val scansUiState = combine(scansRepository.scans, timeFlow()) { scans, time ->
+    val scansUiState = combine(scansRepository.scans, timeFlow(1.seconds)) { scans, time ->
         if (scans.isEmpty()) {
             return@combine ScansUiState.Empty
         }
-        Log.d("MainViewModel", "scansUiState: $scans")
         ScansUiState.Success(scans, time)
     }.catch { ScansUiState.Error }.stateIn(
         viewModelScope,
@@ -56,18 +56,25 @@ class MainViewModel @Inject constructor(
         ScansUiState.Loading
     )
 
-    val settingsUiState = userPreferencesRepository.userPreferences.map {
-        ScansSettingsUiState.Success(it.scanSettings)
-    }.catch { ScansSettingsUiState.Error }.stateIn(
+    val settingsUiState = settingsRepository.userPreferences.map {
+        SettingsUiState.Success(it.scanSettings)
+
+    }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
-        ScansSettingsUiState.Loading
+        SettingsUiState.Loading
     )
 
-    private fun timeFlow() = flow {
+    fun setExtension(extension: Extension) {
+        viewModelScope.launch {
+            settingsRepository.selectExtension(extension)
+        }
+    }
+
+    private fun timeFlow(duration: Duration) = flow {
         while (true) {
             emit(Clock.System.now())
-            delay(1.seconds)
+            delay(duration)
         }
     }
 
@@ -116,8 +123,7 @@ class MainViewModel @Inject constructor(
 }
 
 
-sealed interface ScansSettingsUiState {
-    object Loading : ScansSettingsUiState
-    object Error : ScansSettingsUiState
-    data class Success(val settings: ScansSettings) : ScansSettingsUiState
+sealed interface SettingsUiState {
+    object Loading : SettingsUiState
+    data class Success(val settings: ScansSettings) : SettingsUiState
 }

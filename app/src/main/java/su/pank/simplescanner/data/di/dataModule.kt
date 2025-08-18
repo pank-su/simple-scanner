@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,10 +11,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import su.pank.simplescanner.data.preferences.UserPreferencesSerializer
 import su.pank.simplescanner.data.scans.ScansSerializer
+import su.pank.simplescanner.data.settings.SettingsSerializer
 import su.pank.simplescanner.proto.Scans
-import su.pank.simplescanner.proto.UserPreferences
+import su.pank.simplescanner.proto.Settings
 import javax.inject.Singleton
 
 @Module
@@ -24,8 +23,9 @@ object dataModule {
 
     @Provides
     @Singleton
-    fun provideUserPreferencesDataStore(@ApplicationContext context: Context): DataStore<UserPreferences> = DataStoreFactory.create(
-        serializer = UserPreferencesSerializer,
+    fun provideSettingsDataStore(@ApplicationContext context: Context): DataStore<Settings> =
+        DataStoreFactory.create(
+            serializer = SettingsSerializer,
         scope = CoroutineScope(Dispatchers.IO)
     ) {
         context.dataStoreFile("user_preferences.pb")

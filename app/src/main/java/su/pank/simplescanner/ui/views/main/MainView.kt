@@ -29,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -56,6 +55,7 @@ import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
 import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.data.models.TestItem
+import su.pank.simplescanner.proto.Extension
 import su.pank.simplescanner.proto.scansSettings
 import su.pank.simplescanner.ui.components.ScansCarousel
 import su.pank.simplescanner.ui.components.ScansUiState
@@ -122,7 +122,8 @@ fun MainRoute(
                         .setResultFormats(RESULT_FORMAT_JPEG).build(), launcher
                 )
         },
-        onListViewOpen
+        onListViewOpen,
+        viewModel::setExtension
     )
 
 }
@@ -148,13 +149,15 @@ fun rememberScannerClient(): GmsDocumentScanner {
 @Composable
 fun MainView(
     scansUiState: ScansUiState,
-    settingUiState: ScansSettingsUiState,
+    settingUiState: SettingsUiState,
     selectScan: (ScannedItem) -> Unit,
     scan: () -> Unit,
-    onListViewOpen: () -> Unit
+    onListViewOpen: () -> Unit,
+    setExtension: (Extension) -> Unit
 ) {
     val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
     val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
+
 
     Scaffold(topBar = {
         TopAppBar(title = {
@@ -212,45 +215,43 @@ fun MainView(
                 }
             }
             item {
+                val isLoading = settingUiState is SettingsUiState.Loading
+                val extensions =
+                    Extension.entries.filter { it != Extension.UNRECOGNIZED }.toTypedArray()
+
                 Row(
                     Modifier.padding(horizontal = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
                 ) {
+                    extensions.forEachIndexed { index, extension ->
+                        ToggleButton(
+                            checked = (settingUiState as? SettingsUiState.Success)?.settings?.extension == extension,
+                            onCheckedChange = { setExtension(extension) },
+                            enabled = !isLoading,
+                            modifier = Modifier
+                                .weight(1f)
+                                .semantics { role = Role.RadioButton },
+                            shapes = when (index) {
+                                0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                                extensions.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                                else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                            }
 
-                    ToggleButton(
-                        checked = true,
-                        onCheckedChange = { },
-                        modifier = Modifier
-                            .weight(1f)
-                            .semantics { role = Role.RadioButton },
-                        shapes =
-                            ButtonGroupDefaults.connectedLeadingButtonShapes()
+                        ) {
+                            Icon(
+                                painterResource(
+                                    when (extension) {
+                                        Extension.PDF -> R.drawable.pdf_icon
+                                        Extension.JPG -> R.drawable.jpeg_icon
+                                        Extension.UNRECOGNIZED -> R.drawable.scan
+                                    }
+                                ),
+                                contentDescription = "Localized description",
+                            )
+                            Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
+                            Text(extension.name)
+                        }
 
-
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.pdf_icon),
-                            contentDescription = "Localized description",
-                        )
-                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                        Text("PDF")
-                    }
-                    ToggleButton(
-                        checked = false,
-                        onCheckedChange = { },
-                        modifier = Modifier
-                            .weight(1f)
-                            .semantics { role = Role.RadioButton },
-                        shapes = ButtonGroupDefaults.connectedTrailingButtonShapes()
-
-
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.jpeg_icon),
-                            contentDescription = "Localized description",
-                        )
-                        Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                        Text("JPG")
                     }
 
                 }
@@ -280,8 +281,8 @@ fun MainViewPreview() {
                         TestItem, TestItem, TestItem
                     ), Clock.System.now()
                 ),
-                ScansSettingsUiState.Success(scansSettings { }), {},
-                {}) { }
+                SettingsUiState.Success(scansSettings { }), {},
+                {}, {}) { }
         }
     }
 }

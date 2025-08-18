@@ -35,7 +35,7 @@ android {
 
     defaultConfig {
         applicationId = "su.pank.simplescanner"
-        minSdk = 31 // PDF service need 31 but we can use smth another (before 24)
+        minSdk = 24
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -69,8 +69,6 @@ android {
 }
 
 dependencies {
-    implementation("me.saket.telephoto:zoomable-image-coil3:0.16.0")
-    implementation("me.saket.telephoto:zoomable-peek-overlay:0.16.0")
 
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")

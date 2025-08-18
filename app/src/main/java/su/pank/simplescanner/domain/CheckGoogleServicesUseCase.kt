@@ -10,17 +10,17 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
-import su.pank.simplescanner.data.preferences.UserPreferencesRepository
+import su.pank.simplescanner.data.settings.SettingsRepository
 import javax.inject.Inject
 
 class CheckGoogleServicesUseCase @Inject constructor(
-    private val userPreferencesRepository: UserPreferencesRepository,
+    private val settingsRepository: SettingsRepository,
     @ApplicationContext private val context: Context
 ) {
     private val googleApiAvailability = GoogleApiAvailability.getInstance()
 
     suspend operator fun invoke(activity: Activity? = null): CheckResult {
-        val prefs = userPreferencesRepository.userPreferences.first()
+        val prefs = settingsRepository.userPreferences.first()
         Log.d("CheckGoogleServicesUseCase", "hasGoogleApi: ${prefs.hasGoogleAPI}")
         if (prefs.hasGoogleAPI) {
             return CheckResult.OK
@@ -39,7 +39,7 @@ class CheckGoogleServicesUseCase @Inject constructor(
         return try {
             if (activity != null) {
                 client.getStartScanIntent(activity).await()
-                userPreferencesRepository.googleApiChecked()
+                settingsRepository.googleApiChecked()
                 CheckResult.OK
             } else {
                 CheckResult.RESOLVABLE

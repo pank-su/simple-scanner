@@ -1,0 +1,25 @@
+syntax = "proto3";
+import "scanned.proto";
+
+option java_package = "su.pank.simplescanner.proto";
+option java_multiple_files = true;
+
+
+message Settings{
+  bool hasGoogleAPI = 1;
+  AppSettings appSettings = 2;
+  ScansSettings scanSettings = 3;
+}
+
+message AppSettings{
+  DarkTheme darkTheme = 1;
+  bool isDynamicTheme = 2;
+  optional bool expanded = 3;
+}
+
+
+enum DarkTheme{
+  AUTO = 0;
+  LIGHT = 1;
+  DARK = 2;
+}
