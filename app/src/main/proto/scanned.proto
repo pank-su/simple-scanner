@@ -34,5 +34,8 @@ enum ScanExtensionProto{
 
 message ScansSettingsProto{
   ScanExtensionProto extension = 1;
+  string nameTemplate = 2;
+  string fileNameTemplate = 4;
+  string shareAfterScan = 5;
   optional bool expanded = 3;
 }
