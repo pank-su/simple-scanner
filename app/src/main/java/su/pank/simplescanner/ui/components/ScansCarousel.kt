@@ -137,13 +137,13 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
             Spacer(Modifier.fillMaxSize())
             return@HorizontalMultiBrowseCarousel
         }
-        val preview = remember {
+        val preview = remember(item) {
             item.imageRequests(context).firstOrNull()?.build()
         }
-        val key = remember {
+        val key = remember(item) {
             when (item) {
                 is ScannedItem.JpgItem -> "${item.files.firstOrNull()}"
-                is ScannedItem.PdfFile -> "${item.file}"
+                is ScannedItem.PdfFile -> item.file
             }
         }
         val timeText by remember(timeNow) {
@@ -173,7 +173,7 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
                 val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
                 val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
                 val rounderCornerAnim by animatedContentScope.transition.animateDp(label = "rounded corners") { enterExitState ->
-                    when (enterExitState){
+                    when (enterExitState) {
                         EnterExitState.PreEnter -> 28.dp
                         EnterExitState.Visible -> 4.dp
                         EnterExitState.PostExit -> 4.dp
@@ -185,9 +185,18 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
                     Box(
                         modifier = Modifier
                             .sharedBounds(
-                                sharedTransitionScope.rememberSharedContentState(AnimKeys.containerKey(0, key)),
+                                sharedTransitionScope.rememberSharedContentState(
+                                    AnimKeys.containerKey(
+                                        0,
+                                        key
+                                    )
+                                ),
                                 animatedContentScope,
-                                clipInOverlayDuringTransition = OverlayClip(RoundedCornerShape(rounderCornerAnim)),
+                                clipInOverlayDuringTransition = OverlayClip(
+                                    RoundedCornerShape(
+                                        rounderCornerAnim
+                                    )
+                                ),
                                 resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                             )
                             .maskClip(
