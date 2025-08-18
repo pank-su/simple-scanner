@@ -11,10 +11,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import su.pank.simplescanner.data.scan_settings.ScanSettingsSerializer
 import su.pank.simplescanner.data.scans.ScansSerializer
 import su.pank.simplescanner.data.settings.SettingsSerializer
+import su.pank.simplescanner.proto.AppSettingsProto
 import su.pank.simplescanner.proto.Scans
-import su.pank.simplescanner.proto.Settings
+import su.pank.simplescanner.proto.ScansSettingsProto
+
 import javax.inject.Singleton
 
 @Module
@@ -23,13 +26,23 @@ object dataModule {
 
     @Provides
     @Singleton
-    fun provideSettingsDataStore(@ApplicationContext context: Context): DataStore<Settings> =
+    fun provideAppSettingsDataStore(@ApplicationContext context: Context): DataStore<AppSettingsProto> =
         DataStoreFactory.create(
             serializer = SettingsSerializer,
-        scope = CoroutineScope(Dispatchers.IO)
-    ) {
-        context.dataStoreFile("user_preferences.pb")
-    }
+            scope = CoroutineScope(Dispatchers.IO)
+        ) {
+            context.dataStoreFile("settings.pb")
+        }
+
+    @Provides
+    @Singleton
+    fun provideScansSettingsDataStore(@ApplicationContext context: Context): DataStore<ScansSettingsProto> =
+        DataStoreFactory.create(
+            serializer = ScanSettingsSerializer,
+            scope = CoroutineScope(Dispatchers.IO)
+        ) {
+            context.dataStoreFile("scan_settings.pb")
+        }
 
     @Provides
     @Singleton

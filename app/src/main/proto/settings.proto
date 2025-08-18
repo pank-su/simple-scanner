@@ -5,20 +5,14 @@ option java_package = "su.pank.simplescanner.proto";
 option java_multiple_files = true;
 
 
-message Settings{
+message AppSettingsProto{
   bool hasGoogleAPI = 1;
-  AppSettings appSettings = 2;
-  ScansSettings scanSettings = 3;
+  DarkThemeProto darkTheme = 2;
+  bool isDynamicTheme = 3;
+  optional bool expanded = 4;
 }
 
-message AppSettings{
-  DarkTheme darkTheme = 1;
-  bool isDynamicTheme = 2;
-  optional bool expanded = 3;
-}
-
-
-enum DarkTheme{
+enum DarkThemeProto{
   AUTO = 0;
   LIGHT = 1;
   DARK = 2;

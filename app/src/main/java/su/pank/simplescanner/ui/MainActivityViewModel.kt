@@ -10,23 +10,23 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import su.pank.simplescanner.R
-import su.pank.simplescanner.data.settings.SettingsRepository
+import su.pank.simplescanner.data.models.AppSettings
+import su.pank.simplescanner.data.settings.AppSettingsRepository
 import su.pank.simplescanner.domain.CheckGoogleServicesUseCase
-import su.pank.simplescanner.proto.Settings
 import su.pank.simplescanner.utils.ResourceProvider
 import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val checkGoogleServicesUseCase: CheckGoogleServicesUseCase,
-    private val settingsRepository: SettingsRepository,
+    private val appSettingsRepository: AppSettingsRepository,
     private val resourceProvider: ResourceProvider
 ) :
     ViewModel() {
     private val _state = MutableStateFlow<MainActivityState>(MainActivityState.Loading)
     val state = _state.asStateFlow()
 
-    suspend fun loadData() = settingsRepository.userPreferences.first()
+    suspend fun loadData() = appSettingsRepository.settings.first()
 
 
     fun checkGoogleServicesAndLoadData(activity: Activity) {
@@ -67,7 +67,7 @@ sealed interface MainActivityState {
     /**
      * Data loads success
      */
-    data class Success(val prefs: Settings) : MainActivityState
+    data class Success(val prefs: AppSettings) : MainActivityState
 
 
     object NeedInstallGoogleServices : MainActivityState

@@ -3,7 +3,7 @@ package su.pank.simplescanner.data.scans
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.map
 import su.pank.simplescanner.data.models.ScannedItem
-import su.pank.simplescanner.proto.Extension
+import su.pank.simplescanner.proto.ScanExtensionProto
 import su.pank.simplescanner.proto.Scanned
 import su.pank.simplescanner.proto.Scans
 import javax.inject.Inject
@@ -35,7 +35,7 @@ class ScansRepository @Inject constructor(private val scansDataStore: DataStore<
 @OptIn(ExperimentalTime::class)
 private fun Scanned.toExternal(): ScannedItem? {
     return when (this.scanSettings.extension) {
-        Extension.PDF -> {
+        ScanExtensionProto.PDF -> {
             ScannedItem.PdfFile(
                 name,
                 fileNamesList.first(),
@@ -44,7 +44,7 @@ private fun Scanned.toExternal(): ScannedItem? {
             )
         }
 
-        Extension.JPG -> {
+        ScanExtensionProto.JPG -> {
             ScannedItem.JpgItem(
                 name,
                 fileNamesList.map { it },

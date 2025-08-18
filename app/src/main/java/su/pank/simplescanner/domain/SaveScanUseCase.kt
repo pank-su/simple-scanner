@@ -14,7 +14,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 class SaveScanUseCase @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val ScansRepository: ScansRepository
+    private val scansRepository: ScansRepository
 ) {
     // Now save in the app storage
     // FUTURE: add save to storage in specific path
@@ -22,13 +22,13 @@ class SaveScanUseCase @Inject constructor(
     suspend operator fun invoke(scannedItem: ScannedItem) {
         when (scannedItem) {
             is ScannedItem.JpgItem -> {
-                val files = saveLocal("${scannedItem.name}.jpg", scannedItem.files)
-                ScansRepository.saveScan(scannedItem.copy(files = files))
+                val files = saveLocal("${scannedItem.name}", scannedItem.files)
+                scansRepository.saveScan(scannedItem.copy(files = files))
             }
 
             is ScannedItem.PdfFile -> {
-                val file = saveLocal("${scannedItem.name}.pdf", scannedItem.file)
-                ScansRepository.saveScan(scannedItem.copy(file = file))
+                val file = saveLocal("${scannedItem.name}", scannedItem.file)
+                scansRepository.saveScan(scannedItem.copy(file = file))
             }
         }
     }

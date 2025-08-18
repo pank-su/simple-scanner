@@ -16,9 +16,6 @@
       <SelectionState runConfigName="ScansCarouselPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="LoadinScansCarouselPreview">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="PageCarouselPreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>

@@ -1,16 +1,17 @@
 package su.pank.simplescanner.data.models
 
 import android.content.Context
+import android.util.Log
 import androidx.core.net.toUri
 import coil3.request.ImageRequest
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
 import su.pank.simplescanner.coil.pdf.pdfPageIndex
-import su.pank.simplescanner.proto.Extension
+import su.pank.simplescanner.proto.ScanExtensionProto
 import su.pank.simplescanner.proto.Scanned
 import su.pank.simplescanner.proto.scanned
-import su.pank.simplescanner.proto.scansSettings
+import su.pank.simplescanner.proto.scansSettingsProto
 import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -38,6 +39,7 @@ sealed interface ScannedItem {
 
 
         override fun imageRequests(context: Context) = buildList {
+            Log.d("SHIT", file)
             repeat(pages) {
                 add(
                     ImageRequest.Builder(context).data(file)
@@ -54,9 +56,10 @@ sealed interface ScannedItem {
             return scanned {
                 this.name = this@PdfFile.name
                 savedAsMs = savedAt.toEpochMilliseconds()
+                this.pages = this@PdfFile.pages
                 fileNames.add(file)
-                scanSettings = scansSettings {
-                    extension = Extension.PDF
+                scanSettings = scansSettingsProto {
+                    extension = ScanExtensionProto.PDF
                 }
             }
         }
@@ -82,8 +85,8 @@ sealed interface ScannedItem {
                 savedAsMs = savedAt.toEpochMilliseconds()
                 fileNames.addAll(files.map { it })
                 pages = files.size
-                scanSettings = scansSettings {
-                    extension = Extension.JPG
+                scanSettings = scansSettingsProto {
+                    extension = ScanExtensionProto.JPG
                 }
             }
 

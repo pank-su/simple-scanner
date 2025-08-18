@@ -23,16 +23,16 @@ message Scanned{
   string path = 3;
   int64 savedAsMs = 4;
   int32 pages = 5;
-  ScansSettings scanSettings = 6;
+  ScansSettingsProto scanSettings = 6;
 }
 
-enum Extension{
+enum ScanExtensionProto{
   PDF = 0;
   JPG = 1;
 }
 
 
-message ScansSettings{
-  Extension extension = 1;
+message ScansSettingsProto{
+  ScanExtensionProto extension = 1;
   optional bool expanded = 3;
 }

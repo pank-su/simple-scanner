@@ -8,7 +8,6 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -26,8 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
-import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,9 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -55,11 +48,10 @@ import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
 import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.data.models.TestItem
-import su.pank.simplescanner.proto.Extension
-import su.pank.simplescanner.proto.scansSettings
 import su.pank.simplescanner.ui.components.ScansCarousel
 import su.pank.simplescanner.ui.components.ScansUiState
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
+import su.pank.simplescanner.ui.views.settings.SettingsView
 import su.pank.simplescanner.utils.DarkLightPreview
 import su.pank.simplescanner.utils.LocalNavAnimatedVisibilityScope
 import su.pank.simplescanner.utils.LocalSharedTransitionScope
@@ -109,21 +101,17 @@ fun MainRoute(
     }
 
     val scansUiState by viewModel.scansUiState.collectAsStateWithLifecycle()
-    val settingUiState by viewModel.settingsUiState.collectAsStateWithLifecycle()
 
     MainView(
         scansUiState,
-        settingUiState,
         selectScan,
         {
             if (activity != null)
                 viewModel.scan(
-                    activity, GmsDocumentScannerOptions.Builder().setGalleryImportAllowed(true)
-                        .setResultFormats(RESULT_FORMAT_JPEG).build(), launcher
+                    activity, launcher
                 )
         },
         onListViewOpen,
-        viewModel::setExtension
     )
 
 }
@@ -149,11 +137,9 @@ fun rememberScannerClient(): GmsDocumentScanner {
 @Composable
 fun MainView(
     scansUiState: ScansUiState,
-    settingUiState: SettingsUiState,
     selectScan: (ScannedItem) -> Unit,
     scan: () -> Unit,
     onListViewOpen: () -> Unit,
-    setExtension: (Extension) -> Unit
 ) {
     val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
     val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
@@ -215,46 +201,7 @@ fun MainView(
                 }
             }
             item {
-                val isLoading = settingUiState is SettingsUiState.Loading
-                val extensions =
-                    Extension.entries.filter { it != Extension.UNRECOGNIZED }.toTypedArray()
-
-                Row(
-                    Modifier.padding(horizontal = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
-                ) {
-                    extensions.forEachIndexed { index, extension ->
-                        ToggleButton(
-                            checked = (settingUiState as? SettingsUiState.Success)?.settings?.extension == extension,
-                            onCheckedChange = { setExtension(extension) },
-                            enabled = !isLoading,
-                            modifier = Modifier
-                                .weight(1f)
-                                .semantics { role = Role.RadioButton },
-                            shapes = when (index) {
-                                0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                                extensions.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                                else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                            }
-
-                        ) {
-                            Icon(
-                                painterResource(
-                                    when (extension) {
-                                        Extension.PDF -> R.drawable.pdf_icon
-                                        Extension.JPG -> R.drawable.jpeg_icon
-                                        Extension.UNRECOGNIZED -> R.drawable.scan
-                                    }
-                                ),
-                                contentDescription = "Localized description",
-                            )
-                            Spacer(Modifier.size(ToggleButtonDefaults.IconSpacing))
-                            Text(extension.name)
-                        }
-
-                    }
-
-                }
+                SettingsView()
             }
         }
 
@@ -281,8 +228,9 @@ fun MainViewPreview() {
                         TestItem, TestItem, TestItem
                     ), Clock.System.now()
                 ),
-                SettingsUiState.Success(scansSettings { }), {},
-                {}, {}) { }
+                {},
+                {},
+            ) { }
         }
     }
 }
