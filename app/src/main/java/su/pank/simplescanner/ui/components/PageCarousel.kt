@@ -4,6 +4,10 @@ import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -28,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import su.pank.simplescanner.R
@@ -100,11 +105,10 @@ fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Mo
         }
         return
     }
+    with(sharedTransitionScope) {
 
-    Box(modifier = modifier) {
+        Box(modifier = modifier) {
 
-
-        with(sharedTransitionScope) {
 
             HorizontalCenteredHeroCarousel(
                 state,
@@ -156,12 +160,25 @@ fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Mo
 
             }
 
-
+            //Spacer(Modifier.height(8.dp))
+            with (animatedContentScope) {
+                PageIndicator(
+                    size, state, modifier = Modifier
+                        .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f)
+                        .animateEnterExit(
+                            enter = fadeIn() + slideInVertically {
+                                it
+                            },
+                            exit = fadeOut() + slideOutVertically {
+                                it
+                            }
+                        )
+                        .align(Alignment.BottomCenter)
+                        .padding(10.dp)
+                )
+            }
         }
-        Spacer(Modifier.height(8.dp))
-        PageIndicator(size, state, modifier = Modifier
-            .align(Alignment.BottomCenter)
-            .padding(10.dp))
+
     }
 
 }

@@ -53,4 +53,5 @@
         <item quantity="other">%d месяцев</item>
     </plurals>
     <string name="ago">назад</string>
+    <string name="saved_at">Сохранён в</string>
 </resources>

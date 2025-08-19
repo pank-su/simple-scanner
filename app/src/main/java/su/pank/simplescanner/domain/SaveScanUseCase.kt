@@ -22,12 +22,12 @@ class SaveScanUseCase @Inject constructor(
     suspend operator fun invoke(scannedItem: ScannedItem) {
         when (scannedItem) {
             is ScannedItem.JpgItem -> {
-                val files = saveLocal("${scannedItem.name}", scannedItem.files)
+                val files = saveLocal("${scannedItem.name}", scannedItem.files, scannedItem.id.toHexString())
                 scansRepository.saveScan(scannedItem.copy(files = files))
             }
 
             is ScannedItem.PdfFile -> {
-                val file = saveLocal("${scannedItem.name}", scannedItem.file)
+                val file = saveLocal("${scannedItem.name}", scannedItem.file, scannedItem.id.toHexString())
                 scansRepository.saveScan(scannedItem.copy(file = file))
             }
         }

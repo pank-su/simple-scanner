@@ -7,6 +7,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
@@ -34,6 +35,8 @@ import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.toJavaUuid
 
 
 @OptIn(ExperimentalTime::class)
@@ -48,7 +51,7 @@ class MainViewModel @Inject constructor(
         if (scans.isEmpty()) {
             return@combine ScansUiState.Empty
         }
-        ScansUiState.Success(scans, time)
+        ScansUiState.Success(scans.sortedByDescending { it.savedAt }, time)
     }.catch { ScansUiState.Error }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
@@ -93,6 +96,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     fun saveFile(result: GmsDocumentScanningResult, context: Context): ScannedItem {
         val file: ScannedItem? = if (result.pdf?.uri != null) {
             ScannedItem.PdfFile("Test", result.pdf!!.uri.toString(), result.pdf?.pageCount!!)
@@ -104,7 +108,7 @@ class MainViewModel @Inject constructor(
         val workManager = WorkManager.getInstance(context)
         // Send request to save scan and open file
         workManager.enqueue(
-            OneTimeWorkRequestBuilder<SaveScanWorker>()
+            OneTimeWorkRequestBuilder<SaveScanWorker>().setId(file.id.toJavaUuid()).setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .setInputData(
                     workDataOf(
                         "data" to Json.encodeToString(file)

@@ -10,36 +10,46 @@ import su.pank.simplescanner.R
 import su.pank.simplescanner.coil.pdf.pdfPageIndex
 import su.pank.simplescanner.proto.ScanExtensionProto
 import su.pank.simplescanner.proto.Scanned
+import su.pank.simplescanner.proto.copy
 import su.pank.simplescanner.proto.scanned
 import su.pank.simplescanner.proto.scansSettingsProto
 import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Serializable
-@OptIn(ExperimentalTime::class)
+@OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
 sealed interface ScannedItem {
+    val id: Uuid
     val name: String
     val savedAt: Instant
 
     fun imageRequests(context: Context): List<ImageRequest.Builder>
 
 
-    fun toProtoModel(): Scanned
+    fun toProtoModel(): Scanned = scanned {
+        this.id = this@ScannedItem.id.toHexString()
+        this.name = this@ScannedItem.name
+        savedAsMs = savedAt.toEpochMilliseconds()
+
+    }
 
     @SerialName("pdf")
     @Serializable
-    data class PdfFile(
+    data class PdfFile @OptIn(ExperimentalUuidApi::class) constructor(
+
         override val name: String,
         val file: String,
         val pages: Int,
+        override val id: Uuid = Uuid.random(),
         override val savedAt: Instant = Clock.System.now(), // ignore error
     ) : ScannedItem {
 
 
         override fun imageRequests(context: Context) = buildList {
-            Log.d("SHIT", file)
             repeat(pages) {
                 add(
                     ImageRequest.Builder(context).data(file)
@@ -52,10 +62,8 @@ sealed interface ScannedItem {
 
 
         override fun toProtoModel(): Scanned {
+            return super.toProtoModel().copy {
 
-            return scanned {
-                this.name = this@PdfFile.name
-                savedAsMs = savedAt.toEpochMilliseconds()
                 this.pages = this@PdfFile.pages
                 fileNames.add(file)
                 scanSettings = scansSettingsProto {
@@ -67,9 +75,10 @@ sealed interface ScannedItem {
 
     @SerialName("jpg")
     @Serializable
-    data class JpgItem(
+    data class JpgItem @OptIn(ExperimentalUuidApi::class) constructor(
         override val name: String,
         val files: List<String>,
+        override val id: Uuid = Uuid.random(),
         override val savedAt: Instant = Clock.System.now(), // ignore error
     ) : ScannedItem {
         override fun imageRequests(context: Context) = files.map {
@@ -80,9 +89,7 @@ sealed interface ScannedItem {
 
 
         override fun toProtoModel(): Scanned {
-            return scanned {
-                this.name = this@JpgItem.name
-                savedAsMs = savedAt.toEpochMilliseconds()
+            return super.toProtoModel().copy {
                 fileNames.addAll(files.map { it })
                 pages = files.size
                 scanSettings = scansSettingsProto {
@@ -96,7 +103,7 @@ sealed interface ScannedItem {
 }
 
 
-@OptIn(ExperimentalTime::class)
+@OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
 val TestItem = ScannedItem.JpgItem(
     "Test ${Random.nextInt(1, 100)}",
     listOf(

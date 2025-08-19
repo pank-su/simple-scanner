@@ -18,12 +18,13 @@ message Scans{
 
  */
 message Scanned{
-  string name = 1;
-  repeated string fileNames = 2;
-  string path = 3;
-  int64 savedAsMs = 4;
-  int32 pages = 5;
-  ScansSettingsProto scanSettings = 6;
+  string id = 1;
+  string name = 2;
+  repeated string fileNames = 3;
+  string path = 4;
+  int64 savedAsMs = 5;
+  int32 pages = 6;
+  ScansSettingsProto scanSettings = 7;
 }
 
 enum ScanExtensionProto{

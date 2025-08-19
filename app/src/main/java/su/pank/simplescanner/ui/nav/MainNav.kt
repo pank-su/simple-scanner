@@ -63,7 +63,9 @@ fun ScannerNavHost(
                 }
                 composable<Scan>(typeMap = Scan.typeMap) { entry ->
                     AnimatedScopeProvider {
-                        ScanRoute()
+                        ScanRoute{
+                            navController.popBackStack()
+                        }
                     }
                 }
             }

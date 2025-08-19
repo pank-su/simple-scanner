@@ -42,4 +42,5 @@
         <item quantity="other">%d months</item>
     </plurals>
     <string name="ago">ago</string>
+    <string name="saved_at">Saved at</string>
 </resources>
