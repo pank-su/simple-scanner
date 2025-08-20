@@ -11,7 +11,6 @@ import su.pank.simplescanner.proto.ScanExtensionProto
 import su.pank.simplescanner.proto.Scanned
 import su.pank.simplescanner.proto.copy
 import su.pank.simplescanner.proto.scanned
-import su.pank.simplescanner.proto.scansSettingsProto
 import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -25,6 +24,7 @@ sealed interface ScannedItem {
     val id: Uuid
     val name: String
     val savedAt: Instant
+    val scannedSettings: ScansSettings
 
     fun imageRequests(context: Context): List<ImageRequest.Builder>
 
@@ -33,7 +33,7 @@ sealed interface ScannedItem {
         this.id = this@ScannedItem.id.toHexString()
         this.name = this@ScannedItem.name
         savedAsMs = savedAt.toEpochMilliseconds()
-
+        this.scanSettings = scannedSettings.toProto()
     }
 
     @SerialName("pdf")
@@ -43,8 +43,10 @@ sealed interface ScannedItem {
         override val name: String,
         val file: String,
         val pages: Int,
+        override val scannedSettings: ScansSettings,
         override val id: Uuid = Uuid.random(),
-        override val savedAt: Instant = Clock.System.now(), // ignore error
+        override val savedAt: Instant = Clock.System.now(),
+        // ignore error
     ) : ScannedItem {
 
 
@@ -65,9 +67,7 @@ sealed interface ScannedItem {
 
                 this.pages = this@PdfFile.pages
                 fileNames.add(file)
-                scanSettings = scansSettingsProto {
-                    extension = ScanExtensionProto.PDF
-                }
+
             }
         }
     }
@@ -77,6 +77,7 @@ sealed interface ScannedItem {
     data class JpgItem @OptIn(ExperimentalUuidApi::class) constructor(
         override val name: String,
         val files: List<String>,
+        override val scannedSettings: ScansSettings,
         override val id: Uuid = Uuid.random(),
         override val savedAt: Instant = Clock.System.now(), // ignore error
     ) : ScannedItem {
@@ -92,13 +93,37 @@ sealed interface ScannedItem {
             return super.toProtoModel().copy {
                 fileNames.addAll(files.map { it })
                 pages = files.size
-                scanSettings = scansSettingsProto {
-                    extension = ScanExtensionProto.JPG
-                }
+
             }
 
         }
 
+    }
+}
+
+@OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+fun Scanned.toExternal(): ScannedItem? {
+    return when (this.scanSettings.extension) {
+        ScanExtensionProto.PDF -> {
+            ScannedItem.PdfFile(
+                name,
+                fileNamesList.first(),
+                pages, scanSettings.toExternal(), Uuid.parseHex(id),
+                Instant.fromEpochMilliseconds(savedAsMs)
+            )
+        }
+
+        ScanExtensionProto.JPG -> {
+            ScannedItem.JpgItem(
+                name,
+                fileNamesList.map { it }, scanSettings.toExternal(), Uuid.parseHex(id),
+                Instant.fromEpochMilliseconds(savedAsMs)
+            )
+        }
+
+        else -> {
+            null
+        }
     }
 }
 
@@ -111,5 +136,6 @@ val TestItem = ScannedItem.JpgItem(
         ("android.resource://su.pank.simplescanner/" + R.drawable.photo).toUri().toString(),
         ("android.resource://su.pank.simplescanner/" + R.drawable.photo).toUri().toString(),
         ("android.resource://su.pank.simplescanner/" + R.drawable.photo).toUri().toString()
-    )
+    ),
+    ScansSettings.DEFAULT
 )

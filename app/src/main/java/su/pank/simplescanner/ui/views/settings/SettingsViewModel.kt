@@ -15,13 +15,12 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(private val scanSettingsRepository: ScanSettingsRepository) :
     ViewModel() {
-    val settingsUiState = scanSettingsRepository.settings.map {
-        SettingsUiState.Success(it)
-
+    val scansSettingsUiState = scanSettingsRepository.settings.map {
+        ScansSettingsUiState.Success(it)
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5_000),
-        SettingsUiState.Loading
+        ScansSettingsUiState.Loading
     )
 
     fun setExtension(extension: ScanExtension) {
@@ -30,10 +29,16 @@ class SettingsViewModel @Inject constructor(private val scanSettingsRepository: 
         }
     }
 
+    fun setScansSettingsExpanded(isExpanded: Boolean) {
+        viewModelScope.launch {
+            scanSettingsRepository.setIsExpanded(isExpanded)
+        }
+    }
+
 
 }
 
-sealed interface SettingsUiState {
-    object Loading : SettingsUiState
-    data class Success(val settings: ScansSettings) : SettingsUiState
+sealed interface ScansSettingsUiState {
+    object Loading : ScansSettingsUiState
+    data class Success(val settings: ScansSettings) : ScansSettingsUiState
 }

@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.protobuf)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.oss.licenses)
 }
 
 protobuf{
@@ -38,10 +39,15 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+//    productFlavors {
+//        create("alpha"){
+//            versionNameSuffix = "-alpha"
+//        }
+//    }
 
     buildTypes {
         debug {
@@ -69,6 +75,8 @@ android {
 }
 
 dependencies {
+
+    implementation(libs.play.services.oss.licenses)
 
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)

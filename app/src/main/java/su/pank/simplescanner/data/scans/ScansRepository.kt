@@ -4,12 +4,10 @@ import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import su.pank.simplescanner.data.models.ScannedItem
-import su.pank.simplescanner.proto.ScanExtensionProto
-import su.pank.simplescanner.proto.Scanned
+import su.pank.simplescanner.data.models.toExternal
 import su.pank.simplescanner.proto.Scans
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -39,29 +37,3 @@ class ScansRepository @Inject constructor(private val scansDataStore: DataStore<
 }
 
 
-@OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
-private fun Scanned.toExternal(): ScannedItem? {
-    return when (this.scanSettings.extension) {
-        ScanExtensionProto.PDF -> {
-            ScannedItem.PdfFile(
-
-                name,
-                fileNamesList.first(),
-                pages, Uuid.parseHex(id),
-                Instant.fromEpochMilliseconds(savedAsMs)
-            )
-        }
-
-        ScanExtensionProto.JPG -> {
-            ScannedItem.JpgItem(
-                name,
-                fileNamesList.map { it }, Uuid.parseHex(id),
-                Instant.fromEpochMilliseconds(savedAsMs)
-            )
-        }
-
-        else -> {
-            null
-        }
-    }
-}

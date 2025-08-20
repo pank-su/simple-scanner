@@ -28,6 +28,7 @@ import su.pank.simplescanner.data.models.ScanExtension
 import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.data.scan_settings.ScanSettingsRepository
 import su.pank.simplescanner.data.scans.ScansRepository
+import su.pank.simplescanner.domain.ScanNameUseCase
 import su.pank.simplescanner.ui.components.ScansUiState
 import su.pank.simplescanner.work.SaveScanWorker
 import javax.inject.Inject
@@ -43,7 +44,8 @@ import kotlin.uuid.toJavaUuid
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val scansRepository: ScansRepository,
-    private val scanSettingsRepository: ScanSettingsRepository
+    private val scanSettingsRepository: ScanSettingsRepository,
+    private val scanNameUseCase: ScanNameUseCase
 ) :
     ViewModel() {
 
@@ -84,7 +86,6 @@ class MainViewModel @Inject constructor(
                 ).build()
 
 
-
             val scanner = GmsDocumentScanning.getClient(options)
             try {
                 val intent = scanner.getStartScanIntent(activity).await()
@@ -97,18 +98,28 @@ class MainViewModel @Inject constructor(
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    fun saveFile(result: GmsDocumentScanningResult, context: Context): ScannedItem {
+    suspend fun saveFile(result: GmsDocumentScanningResult, context: Context): ScannedItem {
+
+        val settings = scanSettingsRepository.settings.first()
+        val name = scanNameUseCase()
+        // TODO: check settings
         val file: ScannedItem? = if (result.pdf?.uri != null) {
-            ScannedItem.PdfFile("Test", result.pdf!!.uri.toString(), result.pdf?.pageCount!!)
+            ScannedItem.PdfFile(
+                name,
+                result.pdf!!.uri.toString(),
+                result.pdf?.pageCount!!,
+                settings,
+            )
         } else if (result.pages != null) {
-            ScannedItem.JpgItem("Test", result.pages!!.map { it.imageUri.toString() })
+            ScannedItem.JpgItem(name, result.pages!!.map { it.imageUri.toString() }, settings)
         } else null
 
         requireNotNull(file)
         val workManager = WorkManager.getInstance(context)
         // Send request to save scan and open file
         workManager.enqueue(
-            OneTimeWorkRequestBuilder<SaveScanWorker>().setId(file.id.toJavaUuid()).setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            OneTimeWorkRequestBuilder<SaveScanWorker>().setId(file.id.toJavaUuid())
+                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .setInputData(
                     workDataOf(
                         "data" to Json.encodeToString(file)
@@ -117,6 +128,10 @@ class MainViewModel @Inject constructor(
                 .build()
         )
         return file
+
+    }
+
+    fun readLocaleCsv() {
 
     }
 

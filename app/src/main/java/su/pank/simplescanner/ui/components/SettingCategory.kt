@@ -12,6 +12,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,8 +58,9 @@ fun SettingsCategory(
     icon: @Composable () -> Unit,
     title: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-    shapes: ButtonShapes = SettingCategoryShapes.middle()
+    shapes: ButtonShapes = SettingsCategoryShapes.middle(),
+
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     // val rounding by animateDpAsState(if (expanded) 12.dp else 42.dp, animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec())
     val animSpecFloat = MaterialTheme.motionScheme.slowSpatialSpec<Float>()
@@ -72,8 +74,8 @@ fun SettingsCategory(
         modifier,
         shape = shape,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            contentColor = MaterialTheme.colorScheme.onSurface
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
         )
     ) {
         Column(
@@ -108,7 +110,9 @@ fun SettingsCategory(
                 Column(Modifier) {
                     HorizontalDivider(Modifier.fillMaxWidth())
                     Box(modifier = Modifier.padding(top = 6.dp, bottom = 12.dp)) {
-                        content()
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            content()
+                        }
                     }
                 }
             }
@@ -119,7 +123,7 @@ fun SettingsCategory(
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
-object SettingCategoryShapes {
+object SettingsCategoryShapes {
     @Composable
     fun top() = ButtonShapes(
         MaterialTheme.shapes.large.copy(
@@ -184,7 +188,7 @@ fun SettingsCategoryPreview() {
                         LoremIpsum(words = 50).values.joinToString()
                     )
                 },
-                shapes = SettingCategoryShapes.top()
+                shapes = SettingsCategoryShapes.top()
             )
             SettingsCategory(
                 expanded,
@@ -208,7 +212,7 @@ fun SettingsCategoryPreview() {
                         LoremIpsum(words = 50).values.joinToString()
                     )
                 },
-                shapes = SettingCategoryShapes.bottom()
+                shapes = SettingsCategoryShapes.bottom()
             )
         }
     }

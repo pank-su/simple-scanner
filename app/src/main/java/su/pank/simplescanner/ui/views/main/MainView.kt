@@ -28,6 +28,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -44,6 +45,7 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.SCANNER_MODE_FULL
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
 import su.pank.simplescanner.data.models.ScannedItem
@@ -75,26 +77,28 @@ fun MainRoute(
 ) {
     val context = LocalContext.current
     val activity = LocalActivity.current
+    val coroutineScope = rememberCoroutineScope()
 
 
     val launcher = rememberLauncherForActivityResult(StartIntentSenderForResult()) { result ->
 
-        if (result.resultCode == RESULT_OK) {
-            val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
-            if (result != null) {
-                val scanItem: ScannedItem = viewModel.saveFile(result, context)
-                selectScan(scanItem)
-                return@rememberLauncherForActivityResult
+        coroutineScope.launch {
+            if (result.resultCode == RESULT_OK) {
+                val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
+                if (result != null) {
+                    val scanItem: ScannedItem = viewModel.saveFile(result, context)
+                    selectScan(scanItem)
+                    return@launch
+                }
+                // TODO: проверить нет ли ошибок при ином исходе
+                result?.pdf?.uri?.path?.let { path ->
+                    // Переход в следующий экран с файлом
 
-            }
-            // TODO: проверить нет ли ошибок при ином исходе
-            result?.pdf?.uri?.path?.let { path ->
-                // Переход в следующий экран с файлом
+                    val externalUri = FileProvider.getUriForFile(
+                        context, activity?.packageName + ".provider", File(path)
+                    )
 
-                val externalUri = FileProvider.getUriForFile(
-                    context, activity?.packageName + ".provider", File(path)
-                )
-
+                }
             }
         }
 

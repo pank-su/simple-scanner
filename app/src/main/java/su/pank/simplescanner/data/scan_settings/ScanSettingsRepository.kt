@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import su.pank.simplescanner.data.models.ScanExtension
 import su.pank.simplescanner.data.models.ScansSettings
-import su.pank.simplescanner.proto.ScanExtensionProto
+import su.pank.simplescanner.data.models.toExternal
 import su.pank.simplescanner.proto.ScansSettingsProto
 
 import su.pank.simplescanner.proto.copy
@@ -22,15 +22,15 @@ class ScanSettingsRepository @Inject constructor(private val scansSettingsDataSt
             }
         }
     }
-}
 
-private fun ScansSettingsProto.toExternal(): ScansSettings = ScansSettings(extension.toExternal())
-
-private fun ScanExtensionProto.toExternal(): ScanExtension {
-    return when (this) {
-        ScanExtensionProto.PDF -> ScanExtension.PDF
-        ScanExtensionProto.JPG -> ScanExtension.JPEG
-        else -> throw IllegalArgumentException("Unknown extension")
+    suspend fun setIsExpanded(isExpanded: Boolean) {
+        scansSettingsDataStore.updateData {
+            it.copy {
+                this.expanded = isExpanded
+            }
+        }
     }
 
 }
+
+

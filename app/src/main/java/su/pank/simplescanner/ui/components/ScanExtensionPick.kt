@@ -20,12 +20,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import su.pank.simplescanner.R
 import su.pank.simplescanner.data.models.ScanExtension
-import su.pank.simplescanner.ui.views.settings.SettingsUiState
+import su.pank.simplescanner.ui.views.settings.ScansSettingsUiState
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ScanExtensionPick(
-    settingUiState: SettingsUiState,
+    settingUiState: ScansSettingsUiState,
     setExtension: (ScanExtension) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -36,9 +36,9 @@ fun ScanExtensionPick(
     ) {
         extensions.forEachIndexed { index, extension ->
             ToggleButton(
-                checked = (settingUiState as? SettingsUiState.Success)?.settings?.extension == extension,
+                checked = (settingUiState as? ScansSettingsUiState.Success)?.settings?.extension == extension,
                 onCheckedChange = { setExtension(extension) },
-                enabled = settingUiState != SettingsUiState.Loading,
+                enabled = settingUiState != ScansSettingsUiState.Loading,
                 modifier = Modifier
                     .weight(1f)
                     .semantics { role = Role.RadioButton },
