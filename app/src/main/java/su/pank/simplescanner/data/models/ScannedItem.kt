@@ -1,7 +1,6 @@
 package su.pank.simplescanner.data.models
 
 import android.content.Context
-import android.util.Log
 import androidx.core.net.toUri
 import coil3.request.ImageRequest
 import kotlinx.serialization.SerialName
@@ -53,8 +52,8 @@ sealed interface ScannedItem {
             repeat(pages) {
                 add(
                     ImageRequest.Builder(context).data(file)
-                        .placeholderMemoryCacheKey(file + "$it")
-                        .memoryCacheKey(file + "$it")
+                        .placeholderMemoryCacheKey(id.toHexString() + "$it")
+                        .memoryCacheKey(id.toHexString() + "$it")
                         .pdfPageIndex(it)
                 )
             }
@@ -81,10 +80,11 @@ sealed interface ScannedItem {
         override val id: Uuid = Uuid.random(),
         override val savedAt: Instant = Clock.System.now(), // ignore error
     ) : ScannedItem {
-        override fun imageRequests(context: Context) = files.map {
-            ImageRequest.Builder(context).data(it)
-                .placeholderMemoryCacheKey(it)
-                .memoryCacheKey(it)
+        override fun imageRequests(context: Context) = files.mapIndexed { index, file ->
+            ImageRequest.Builder(context).data(file)
+                .placeholderMemoryCacheKey(id.toHexString() + "$index")
+                .memoryCacheKey(id.toHexString() + "$index")
+
         }
 
 

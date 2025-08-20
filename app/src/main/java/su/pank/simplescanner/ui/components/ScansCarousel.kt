@@ -52,6 +52,7 @@ import su.pank.simplescanner.utils.rememberTimeFormatter
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
+import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
@@ -117,7 +118,7 @@ private fun EmptyState() {
 
 @OptIn(
     ExperimentalTime::class, ExperimentalMaterial3Api::class,
-    ExperimentalSharedTransitionApi::class
+    ExperimentalSharedTransitionApi::class, ExperimentalUuidApi::class
 )
 @Composable
 fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (ScannedItem) -> Unit) {
@@ -141,10 +142,7 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
             item.imageRequests(context).firstOrNull()?.build()
         }
         val key = remember(item) {
-            when (item) {
-                is ScannedItem.JpgItem -> "${item.files.firstOrNull()}"
-                is ScannedItem.PdfFile -> item.file
-            }
+            item.id.toHexString()
         }
         val timeText by remember(timeNow) {
             derivedStateOf {

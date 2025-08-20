@@ -1,8 +1,5 @@
 package su.pank.simplescanner.ui.views.scan
 
-import android.os.Build
-import android.text.format.DateFormat
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,8 +25,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.toRoute
 import coil3.request.crossfade
-import kotlinx.datetime.format
-import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
 import su.pank.simplescanner.data.models.ScannedItem
@@ -41,6 +36,7 @@ import java.time.format.FormatStyle
 import kotlin.reflect.typeOf
 import kotlin.time.ExperimentalTime
 import kotlin.time.toJavaInstant
+import kotlin.uuid.ExperimentalUuidApi
 
 
 @Serializable
@@ -62,7 +58,7 @@ fun ScanRoute(scanViewModel: ScanViewModel = hiltViewModel(), onBackPressed: () 
 
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3ExpressiveApi::class, ExperimentalTime::class
+    ExperimentalMaterial3ExpressiveApi::class, ExperimentalTime::class, ExperimentalUuidApi::class
 )
 @Composable
 fun ScanView(item: ScannedItem, onBackPressed: () -> Unit, modifier: Modifier = Modifier) {
@@ -94,10 +90,7 @@ fun ScanView(item: ScannedItem, onBackPressed: () -> Unit, modifier: Modifier = 
         ) {
             PageCarousel(
                 pages = images,
-                when (item) {
-                    is ScannedItem.JpgItem -> item.files.first()
-                    is ScannedItem.PdfFile -> item.file
-                },
+                item.id.toHexString(),
 
                 Modifier.weight(1f)
             )

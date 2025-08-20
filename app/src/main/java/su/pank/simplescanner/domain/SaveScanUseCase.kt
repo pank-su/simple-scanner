@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.core.net.toFile
 import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.data.scans.ScansRepository
 import javax.inject.Inject
@@ -22,13 +24,34 @@ class SaveScanUseCase @Inject constructor(
     suspend operator fun invoke(scannedItem: ScannedItem) {
         when (scannedItem) {
             is ScannedItem.JpgItem -> {
-                val files = saveLocal("${scannedItem.name}", scannedItem.files, scannedItem.id.toHexString())
+                val files = saveLocal(
+                    "${scannedItem.name}.jpg",
+                    scannedItem.files,
+                    scannedItem.id.toHexString()
+                )
                 scansRepository.saveScan(scannedItem.copy(files = files))
+                coroutineScope {
+                    launch {
+                        scannedItem.files.map {
+                            it.toUri().toFile().delete()
+                        } // Remove file from cache
+                    }
+                }
             }
 
             is ScannedItem.PdfFile -> {
-                val file = saveLocal("${scannedItem.name}", scannedItem.file, scannedItem.id.toHexString())
+                val file = saveLocal(
+                    "${scannedItem.name}.pdf",
+                    scannedItem.file,
+                    scannedItem.id.toHexString()
+                )
                 scansRepository.saveScan(scannedItem.copy(file = file))
+                coroutineScope {
+                    launch {
+                        scannedItem.file.toUri().toFile().delete() // Remove file from cache
+                    }
+                }
+
             }
         }
     }
