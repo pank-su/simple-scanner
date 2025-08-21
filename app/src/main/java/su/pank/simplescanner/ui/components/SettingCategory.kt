@@ -74,8 +74,8 @@ fun SettingsCategory(
         modifier,
         shape = shape,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
     ) {
         Column(
@@ -140,7 +140,7 @@ object SettingsCategoryShapes {
     fun bottom() = ButtonShapes(
         MaterialTheme.shapes.large.copy(
             topEnd = CornerSize(
-                4.dp
+                8.dp
             ), topStart = CornerSize(8.dp)
         ), MaterialTheme.shapes.extraSmall
     )

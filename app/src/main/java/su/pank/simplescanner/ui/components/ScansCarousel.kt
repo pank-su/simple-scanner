@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -65,7 +66,7 @@ fun ScansCarousel(
 
     Box(
         modifier
-            .height(211.dp)
+            .height(250.dp)
             .widthIn(min = 300.dp)
     ) {
 
@@ -124,14 +125,15 @@ private fun EmptyState() {
 fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (ScannedItem) -> Unit) {
     val timeFormatter = rememberTimeFormatter()
     val context = LocalContext.current
-    val state = rememberCarouselState { scans.size }
+    val state = rememberCarouselState { scans.size.coerceAtLeast(3) }
 
 
     HorizontalMultiBrowseCarousel(
         state,
         preferredItemWidth = 145.dp,
         itemSpacing = 10.dp,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        userScrollEnabled = scans.size >= 3,
     ) {
         val item = scans.getOrNull(it)
         if (item == null) {
@@ -222,7 +224,12 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(item.name, style = MaterialTheme.typography.titleSmall)
+                        Text(
+                            item.name,
+                            style = MaterialTheme.typography.titleSmall,
+                            maxLines = 2,
+                            overflow = TextOverflow.MiddleEllipsis
+                        )
                         Text(
                             "$timeText ${stringResource(R.string.ago)}",
                             style = MaterialTheme.typography.bodySmall,

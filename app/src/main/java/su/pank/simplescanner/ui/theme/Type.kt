@@ -48,7 +48,8 @@ val Typography = Typography(
         fontFamily = headlineSmallFontFamily,
         fontSize = 24.sp,
         lineHeight = 32.sp
-    )
+    ),
+    titleMediumEmphasized = Typography().titleMedium.copy(fontFamily = headlineSmallFontFamily)
     /* Other default text styles to override
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,
