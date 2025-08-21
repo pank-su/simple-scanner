@@ -14,6 +14,8 @@ import su.pank.simplescanner.ui.views.main.Main
 import su.pank.simplescanner.ui.views.main.MainRoute
 import su.pank.simplescanner.ui.views.scan.Scan
 import su.pank.simplescanner.ui.views.scan.ScanRoute
+import su.pank.simplescanner.ui.views.scans_list.ScanList
+import su.pank.simplescanner.ui.views.scans_list.ScanListRoute
 import su.pank.simplescanner.ui.views.splash.Splash
 import su.pank.simplescanner.ui.views.splash.SplashView
 import su.pank.simplescanner.ui.views.splash_error.SplashError
@@ -55,7 +57,7 @@ fun ScannerNavHost(
                     AnimatedScopeProvider {
 
                         MainRoute({
-
+                            navController.navigate(ScanList)
                         }, {
                             navController.navigate(Scan(it) )
                         })
@@ -66,6 +68,15 @@ fun ScannerNavHost(
                         ScanRoute{
                             navController.popBackStack()
                         }
+                    }
+                }
+                composable<ScanList> {
+                    AnimatedScopeProvider {
+                        ScanListRoute({
+                            navController.navigate(Scan(it))
+                        }, {
+                            navController.popBackStack()
+                        })
                     }
                 }
             }

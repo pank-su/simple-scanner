@@ -14,12 +14,10 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -30,10 +28,9 @@ import su.pank.simplescanner.data.scan_settings.ScanSettingsRepository
 import su.pank.simplescanner.data.scans.ScansRepository
 import su.pank.simplescanner.domain.ScanNameUseCase
 import su.pank.simplescanner.ui.components.ScansUiState
+import su.pank.simplescanner.utils.timeFlow
 import su.pank.simplescanner.work.SaveScanWorker
 import javax.inject.Inject
-import kotlin.time.Clock
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -43,7 +40,7 @@ import kotlin.uuid.toJavaUuid
 @OptIn(ExperimentalTime::class)
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val scansRepository: ScansRepository,
+    scansRepository: ScansRepository,
     private val scanSettingsRepository: ScanSettingsRepository,
     private val scanNameUseCase: ScanNameUseCase
 ) :
@@ -61,12 +58,6 @@ class MainViewModel @Inject constructor(
     )
 
 
-    private fun timeFlow(duration: Duration) = flow {
-        while (true) {
-            emit(Clock.System.now())
-            delay(duration)
-        }
-    }
 
     fun scan(
         activity: Activity,

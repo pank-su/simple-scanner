@@ -9,10 +9,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,7 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import su.pank.simplescanner.R
@@ -47,7 +44,12 @@ import su.pank.simplescanner.utils.currentOrThrow
     ExperimentalSharedTransitionApi::class
 )
 @Composable
-fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Modifier) {
+fun PageCarousel(
+    pages: List<ImageRequest>,
+    key: String,
+    modifier: Modifier = Modifier,
+    withPager: Boolean = true,
+) {
     val size by remember {
         derivedStateOf { pages.size }
     }
@@ -66,7 +68,7 @@ fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Mo
         with(sharedTransitionScope) {
 
             Box(
-                modifier = Modifier
+                modifier = modifier
                     .sharedBounds(
                         sharedTransitionScope.rememberSharedContentState(
                             AnimKeys.containerKey(
@@ -112,7 +114,7 @@ fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Mo
 
             HorizontalCenteredHeroCarousel(
                 state,
-                modifier = Modifier,
+                modifier = Modifier.fillMaxSize(),
                 //contentPadding = PaddingValues(horizontal = 10.dp),
                 itemSpacing = 8.dp
             ) {
@@ -161,21 +163,22 @@ fun PageCarousel(pages: List<ImageRequest>, key: String, modifier: Modifier = Mo
             }
 
             //Spacer(Modifier.height(8.dp))
-            with (animatedContentScope) {
-                PageIndicator(
-                    size, state, modifier = Modifier
-                        .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f)
-                        .animateEnterExit(
-                            enter = fadeIn() + slideInVertically {
-                                it
-                            },
-                            exit = fadeOut() + slideOutVertically {
-                                it
-                            }
-                        )
-                        .align(Alignment.BottomCenter)
-                        .padding(10.dp)
-                )
+            with(animatedContentScope) {
+                if (withPager)
+                    PageIndicator(
+                        size, state, modifier = Modifier
+                            .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f)
+                            .animateEnterExit(
+                                enter = fadeIn() + slideInVertically {
+                                    it
+                                },
+                                exit = fadeOut() + slideOutVertically {
+                                    it
+                                }
+                            )
+                            .align(Alignment.BottomCenter)
+                            .padding(10.dp)
+                    )
             }
         }
 

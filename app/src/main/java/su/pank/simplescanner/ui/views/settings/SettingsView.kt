@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -96,7 +97,11 @@ fun ScanSettings(
                     )
                 }
 
-                Switch(true, {})
+                Switch(
+                    true,
+                    {},
+                    colors = SwitchDefaults.colors(checkedTrackColor = MaterialTheme.colorScheme.secondary)
+                )
             }
 
         }
@@ -109,7 +114,7 @@ fun ScanSettings(
 fun AboutApp(modifier: Modifier = Modifier, isExpandedStart: Boolean = false) {
     val context = LocalContext.current
     val activity = LocalActivity.current
-    val t = LocalUriHandler.current
+    val uriHandler = LocalUriHandler.current
     val packageInfo: PackageInfo? = context.packageManager.getPackageInfo(context.packageName, 0)
     var isExpanded by remember { mutableStateOf(isExpandedStart) }
     SettingsCategory(
@@ -145,7 +150,7 @@ fun AboutApp(modifier: Modifier = Modifier, isExpandedStart: Boolean = false) {
         ) {
             Text(
                 stringResource(R.string.used_libs),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.titleMedium
             )
             IconButton({
                 activity?.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
@@ -162,8 +167,10 @@ fun AboutApp(modifier: Modifier = Modifier, isExpandedStart: Boolean = false) {
 
         }
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Button(onClick = {}, shapes = ButtonDefaults.shapes()) {
-                Text("Made with ❤️ by ")
+            Button(onClick = {
+                uriHandler.openUri("https://github.com/pank-su")
+            }, shapes = ButtonDefaults.shapes()) {
+                Text(stringResource(R.string.made_with_by))
                 Text("pank-su ", style = MaterialTheme.typography.titleMediumEmphasized)
                 AsyncImage(
                     model = "https://avatars.githubusercontent.com/u/49202787",

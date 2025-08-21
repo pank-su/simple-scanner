@@ -9,17 +9,19 @@ import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.TonalToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.pank.simplescanner.R
 import su.pank.simplescanner.data.models.ScanExtension
+import su.pank.simplescanner.data.models.ScansSettings
 import su.pank.simplescanner.ui.views.settings.ScansSettingsUiState
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -35,7 +37,7 @@ fun ScanExtensionPick(
         horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
     ) {
         extensions.forEachIndexed { index, extension ->
-            ToggleButton(
+            TonalToggleButton(
                 checked = (settingUiState as? ScansSettingsUiState.Success)?.settings?.extension == extension,
                 onCheckedChange = { setExtension(extension) },
                 enabled = settingUiState != ScansSettingsUiState.Loading,
@@ -65,4 +67,14 @@ fun ScanExtensionPick(
         }
 
     }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Preview
+@Composable
+fun ScanExtensionPickPreview() {
+    ScanExtensionPick(
+        settingUiState = ScansSettingsUiState.Success(ScansSettings(true, ScanExtension.JPEG)),
+        setExtension = {}
+    )
 }

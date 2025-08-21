@@ -78,7 +78,7 @@ class SaveScanUseCase @Inject constructor(
         dirName: String = Uuid.random().toHexDashString()
     ): String {
 
-        val dir = context.getDir(dirName, Context.MODE_PRIVATE)
+        val dir = context.filesDir.resolve("saved_scans/$dirName")
 
         if (!dir.exists()) dir.mkdirs()
         val filePath = dir.resolve(fileName)

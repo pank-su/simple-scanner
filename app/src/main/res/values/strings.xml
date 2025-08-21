@@ -265,4 +265,5 @@
     </string-array>
     <string name="version">App version</string>
     <string name="used_libs">Used libraries</string>
+    <string name="made_with_by">"Made with ❤️ by "</string>
 </resources>

@@ -277,4 +277,5 @@
     </string-array>
     <string name="version">Версия приложения</string>
     <string name="used_libs">Используемые библиотеки</string>
+    <string name="made_with_by">"Сделано с ❤️  "</string>
 </resources>

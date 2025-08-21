@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
@@ -28,7 +29,9 @@ import coil3.request.crossfade
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
 import su.pank.simplescanner.data.models.ScannedItem
+import su.pank.simplescanner.data.models.TestItem
 import su.pank.simplescanner.ui.components.PageCarousel
+import su.pank.simplescanner.utils.SharedElementScopeCompositionLocal
 import su.pank.simplescanner.utils.serializableType
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -51,9 +54,10 @@ data class Scan(val scannedItem: ScannedItem) {
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ScanRoute(scanViewModel: ScanViewModel = hiltViewModel(), onBackPressed: () -> Unit) {
-    val item by scanViewModel.scanItem.collectAsStateWithLifecycle(null)
-    if (item == null) return
-    ScanView(item!!, onBackPressed)
+    val item by scanViewModel.scanItem.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    ScanView(item, onBackPressed, onShare = { scanViewModel.shareScan(context) })
 }
 
 
@@ -61,7 +65,12 @@ fun ScanRoute(scanViewModel: ScanViewModel = hiltViewModel(), onBackPressed: () 
     ExperimentalMaterial3ExpressiveApi::class, ExperimentalTime::class, ExperimentalUuidApi::class
 )
 @Composable
-fun ScanView(item: ScannedItem, onBackPressed: () -> Unit, modifier: Modifier = Modifier) {
+fun ScanView(
+    item: ScannedItem,
+    onBackPressed: () -> Unit,
+    onShare: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val context = LocalContext.current
 
     val images = remember(item) {
@@ -79,6 +88,10 @@ fun ScanView(item: ScannedItem, onBackPressed: () -> Unit, modifier: Modifier = 
         }, navigationIcon = {
             IconButton(onBackPressed, shapes = IconButtonDefaults.shapes()) {
                 Icon(painterResource(R.drawable.back_icon), "Back")
+            }
+        }, actions = {
+            IconButton(onShare, shapes = IconButtonDefaults.shapes()) {
+                Icon(painterResource(R.drawable.share_icon), "Share")
             }
         })
     }) {
@@ -99,7 +112,18 @@ fun ScanView(item: ScannedItem, onBackPressed: () -> Unit, modifier: Modifier = 
 
 }
 
+@OptIn(
+    ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class, ExperimentalTime::class, ExperimentalUuidApi::class
+)
+@Preview
+@Composable
+fun ScanViewPreview() {
+    SharedElementScopeCompositionLocal {
 
-
-
-
+        ScanView(
+            item = TestItem,
+            onBackPressed = {}, {}
+        )
+    }
+}

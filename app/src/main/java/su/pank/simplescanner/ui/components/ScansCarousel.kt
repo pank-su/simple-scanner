@@ -48,6 +48,7 @@ import su.pank.simplescanner.utils.DarkLightPreview
 import su.pank.simplescanner.utils.LocalNavAnimatedVisibilityScope
 import su.pank.simplescanner.utils.LocalSharedTransitionScope
 import su.pank.simplescanner.utils.LocalePreview
+import su.pank.simplescanner.utils.SharedElementScopeCompositionLocal
 import su.pank.simplescanner.utils.currentOrThrow
 import su.pank.simplescanner.utils.rememberTimeFormatter
 import kotlin.time.Clock
@@ -59,14 +60,14 @@ import kotlin.uuid.ExperimentalUuidApi
 @Composable
 fun ScansCarousel(
     state: ScansUiState,
-    onClickedScan: (ScannedItem) -> Unit = {},
+    onClickedScan: (ScannedItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
 
     Box(
         modifier
-            .height(250.dp)
+            .height(230.dp)
             .widthIn(min = 300.dp)
     ) {
 
@@ -85,7 +86,7 @@ fun ScansCarousel(
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun LoadingState() {
+internal fun LoadingState() {
     ElevatedCard(modifier = Modifier.fillMaxSize()) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             LoadingIndicator()
@@ -94,7 +95,7 @@ private fun LoadingState() {
 }
 
 @Composable
-private fun EmptyState() {
+internal fun EmptyState() {
     ElevatedCard(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -122,7 +123,11 @@ private fun EmptyState() {
     ExperimentalSharedTransitionApi::class, ExperimentalUuidApi::class
 )
 @Composable
-fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (ScannedItem) -> Unit) {
+private fun SuccessState(
+    scans: List<ScannedItem>,
+    timeNow: Instant,
+    onClickedScan: (ScannedItem) -> Unit
+) {
     val timeFormatter = rememberTimeFormatter()
     val context = LocalContext.current
     val state = rememberCarouselState { scans.size.coerceAtLeast(3) }
@@ -227,7 +232,8 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
                         Text(
                             item.name,
                             style = MaterialTheme.typography.titleSmall,
-                            maxLines = 2,
+                            maxLines = 1,
+
                             overflow = TextOverflow.MiddleEllipsis
                         )
                         Text(
@@ -261,7 +267,6 @@ fun SuccessState(scans: List<ScannedItem>, timeNow: Instant, onClickedScan: (Sca
 @Preview
 @Composable
 fun ScansCarouselPreview() {
-    val context = LocalContext.current
     val scans = listOf<ScannedItem>(
         TestItem,
         TestItem,
@@ -269,12 +274,15 @@ fun ScansCarouselPreview() {
         TestItem
     )
     SimpleScannerTheme {
-        ScansCarousel(
-            ScansUiState.Success(
-                scans = scans,
-                timeNow = Clock.System.now(),
+        SharedElementScopeCompositionLocal {
+            ScansCarousel(
+                ScansUiState.Success(
+                    scans = scans,
+                    timeNow = Clock.System.now(),
+                ),
+                {}
             )
-        )
+        }
     }
 }
 
@@ -287,6 +295,7 @@ fun EmptyScansCarouselPreview() {
     SimpleScannerTheme {
         ScansCarousel(
             ScansUiState.Empty,
+            {}
         )
     }
 }
@@ -295,7 +304,10 @@ fun EmptyScansCarouselPreview() {
 @DarkLightPreview
 fun LoadingScansCarouselPreview() {
     SimpleScannerTheme {
-        ScansCarousel(ScansUiState.Loading)
+        SharedElementScopeCompositionLocal {
+
+            ScansCarousel(ScansUiState.Loading, {})
+        }
     }
 }
 
