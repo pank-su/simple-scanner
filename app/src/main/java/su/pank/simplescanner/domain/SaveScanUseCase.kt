@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import su.pank.simplescanner.data.models.Scan
 import su.pank.simplescanner.data.scans.ScanRepository
 import su.pank.simplescanner.domain.models.SaveScanTask
+import java.io.File
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -31,12 +32,12 @@ class SaveScanUseCase @Inject constructor(
                 val files = saveLocal(
                     "${scan.name}.jpg",
                     saveScanTask.files,
-                    scan.id.toString()
+                    scan.path
                 )
-                scanRepository.saveScan(scan.copy(files = files))
+                scanRepository.saveScan(scan.copy(fileNames = files))
                 coroutineScope {
                     launch {
-                        scan.files.map {
+                        scan.fileNames.map {
                             it.toUri().toFile().delete()
                         } // Remove file from cache
                     }
@@ -47,12 +48,12 @@ class SaveScanUseCase @Inject constructor(
                 val file = saveLocal(
                     "${scan.name}.pdf",
                     saveScanTask.files.first(),
-                    scan.id.toString()
+                    scan.path
                 )
-                scanRepository.saveScan(scan.copy(file = file))
+                scanRepository.saveScan(scan.copy(fileName = file))
                 coroutineScope {
                     launch {
-                        scan.file.toUri().toFile().delete() // Remove file from cache
+                        scan.fileName.toUri().toFile().delete() // Remove file from cache
                     }
                 }
 
@@ -79,10 +80,10 @@ class SaveScanUseCase @Inject constructor(
     suspend fun saveLocal(
         fileName: String,
         fileUri: String,
-        dirName: String = Uuid.random().toHexDashString()
+        path: String = Uuid.random().toHexDashString()
     ): String {
 
-        val dir = context.filesDir.resolve("saved_scans/$dirName")
+        val dir = File(path)
 
         if (!dir.exists()) dir.mkdirs()
         val filePath = dir.resolve(fileName)
@@ -90,6 +91,6 @@ class SaveScanUseCase @Inject constructor(
             it.write(fileUri.toUri().toFile().readBytes())
         }
 
-        return filePath.path
+        return filePath.name
     }
 }

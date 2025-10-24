@@ -31,8 +31,25 @@ class DefaultScanRepository @Inject constructor(val scanDao: ScanDao) : ScanRepo
 
 @OptIn(ExperimentalTime::class)
 private fun Scan.toEntity(): ScanEntity = when (this) {
-    is Scan.ScanJpg -> ScanEntity(id, name, path, files, savedAt, files.size, ScanExtension.JPEG)
-    is Scan.ScanPdf -> ScanEntity(id, name, path, listOf(file), savedAt, pages, ScanExtension.PDF)
+    is Scan.ScanJpg -> ScanEntity(
+        id,
+        name,
+        path,
+        fileNames,
+        savedAt,
+        fileNames.size,
+        ScanExtension.JPEG
+    )
+
+    is Scan.ScanPdf -> ScanEntity(
+        id,
+        name,
+        path,
+        listOf(fileName),
+        savedAt,
+        pages,
+        ScanExtension.PDF
+    )
 }
 
 private fun List<ScanEntity>.toExternal(): List<Scan> {

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
-import androidx.core.net.toFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequestBuilder
@@ -37,6 +36,7 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 @OptIn(ExperimentalTime::class)
@@ -95,18 +95,20 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(context = Dispatchers.IO) {
             val settings = scanSettingsRepository.settings.first()
             val name = scanNameUseCase()
+            val path = context.filesDir.resolve("saved_scans/${Uuid.random().toHexString()}")
+
             // TODO: check settings
             val new: NewScan? = if (result.pdf?.uri != null) {
                 NewScan(
                     name,
-                    result.pdf?.uri?.toFile()?.parentFile?.canonicalPath!!,
+                    path.toString(),
                     result.pdf?.pageCount!!,
                     ScanExtension.PDF
                 )
             } else if (result.pages != null) {
                 NewScan(
                     name,
-                    result.pages?.first()?.imageUri?.toFile()?.parentFile?.canonicalPath!!,
+                    path.toString(),
                     result.pages?.size!!,
                     extension = ScanExtension.JPEG
                 )

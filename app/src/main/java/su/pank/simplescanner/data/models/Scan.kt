@@ -6,6 +6,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
 import su.pank.simplescanner.coil.pdf.pdfPageIndex
+import java.io.File
 import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -30,7 +31,7 @@ sealed interface Scan {
         override val id: Int,
         override val name: String,
         override val path: String,
-        val file: String,
+        val fileName: String,
         val pages: Int,
         override val savedAt: Instant = Clock.System.now(),         // ignore error
 
@@ -40,9 +41,9 @@ sealed interface Scan {
         override fun imageRequests(context: Context) = buildList {
             repeat(pages) {
                 add(
-                    ImageRequest.Builder(context).data(file)
-                        .placeholderMemoryCacheKey(id.toHexString() + "$it")
-                        .memoryCacheKey(id.toHexString() + "$it")
+                    ImageRequest.Builder(context).data(File(path, fileName))
+                        .placeholderMemoryCacheKey("$id-$it")
+                        .memoryCacheKey("$id-$it")
                         .pdfPageIndex(it)
                 )
             }
@@ -58,13 +59,13 @@ sealed interface Scan {
         override val id: Int,
         override val name: String,
         override val path: String,
-        val files: List<String>,
+        val fileNames: List<String>,
         override val savedAt: Instant = Clock.System.now(), // ignore error
     ) : Scan {
-        override fun imageRequests(context: Context) = files.mapIndexed { index, file ->
-            ImageRequest.Builder(context).data(file)
-                .placeholderMemoryCacheKey(id.toHexString() + "$index")
-                .memoryCacheKey(id.toHexString() + "$index")
+        override fun imageRequests(context: Context) = fileNames.mapIndexed { index, filename ->
+            ImageRequest.Builder(context).data(File(path, filename))
+                .placeholderMemoryCacheKey("$id-$index")
+                .memoryCacheKey("$id-$index")
 
         }
 
