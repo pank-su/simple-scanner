@@ -119,7 +119,8 @@ dependencies {
     implementation(libs.androidx.foundation)
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)
+    //implementation(libs.hilt.navigation.compose)
+    implementation(libs.hilt.lifecycle.viewmodel.compose)
 
 
     testImplementation(libs.junit)

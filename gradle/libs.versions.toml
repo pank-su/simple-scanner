@@ -69,6 +69,7 @@ koin-compose-viewmodel-navigation = { module = "io.insert-koin:koin-compose-view
 koin-android = {module = "io.insert-koin:koin-android", version.ref="koin"}
 
 hilt = {module = "com.google.dagger:hilt-android", version.ref="hilt"}
+hilt-lifecycle-viewmodel-compose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "hilt-ext" }
 hilt-android-compiler = {module="com.google.dagger:hilt-android-compiler", version.ref="hilt"}
 hilt-navigation-compose = {module="androidx.hilt:hilt-navigation-compose", version.ref="hilt-ext"}
 hilt-compiler = {module = "androidx.hilt:hilt-compiler", version.ref="hilt-ext"}
