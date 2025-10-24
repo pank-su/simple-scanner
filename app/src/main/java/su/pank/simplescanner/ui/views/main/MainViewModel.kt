@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
+import androidx.core.net.toFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequestBuilder
@@ -14,6 +15,7 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -22,11 +24,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.json.Json
+import su.pank.simplescanner.data.models.NewScan
 import su.pank.simplescanner.data.models.ScanExtension
-import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.data.scan_settings.ScanSettingsRepository
-import su.pank.simplescanner.data.scans.ScansRepository
+import su.pank.simplescanner.data.scans.ScanRepository
 import su.pank.simplescanner.domain.ScanNameUseCase
+import su.pank.simplescanner.domain.models.SaveScanTask
 import su.pank.simplescanner.ui.components.ScansUiState
 import su.pank.simplescanner.utils.timeFlow
 import su.pank.simplescanner.work.SaveScanWorker
@@ -34,13 +37,12 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.toJavaUuid
 
 
 @OptIn(ExperimentalTime::class)
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    scansRepository: ScansRepository,
+    private val scansRepository: ScanRepository,
     private val scanSettingsRepository: ScanSettingsRepository,
     private val scanNameUseCase: ScanNameUseCase
 ) :
@@ -56,7 +58,6 @@ class MainViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(5_000),
         ScansUiState.Loading
     )
-
 
 
     fun scan(
@@ -89,36 +90,56 @@ class MainViewModel @Inject constructor(
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    suspend fun saveFile(result: GmsDocumentScanningResult, context: Context): ScannedItem {
+    fun saveFile(result: GmsDocumentScanningResult, context: Context) {
 
-        val settings = scanSettingsRepository.settings.first()
-        val name = scanNameUseCase()
-        // TODO: check settings
-        val file: ScannedItem? = if (result.pdf?.uri != null) {
-            ScannedItem.PdfFile(
-                name,
-                result.pdf!!.uri.toString(),
-                result.pdf?.pageCount!!,
-                settings,
-            )
-        } else if (result.pages != null) {
-            ScannedItem.JpgItem(name, result.pages!!.map { it.imageUri.toString() }, settings)
-        } else null
-
-        requireNotNull(file)
-        val workManager = WorkManager.getInstance(context)
-        // Send request to save scan and open file
-        workManager.enqueue(
-            OneTimeWorkRequestBuilder<SaveScanWorker>().setId(file.id.toJavaUuid())
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .setInputData(
-                    workDataOf(
-                        "data" to Json.encodeToString(file)
-                    )
+        viewModelScope.launch(context = Dispatchers.IO) {
+            val settings = scanSettingsRepository.settings.first()
+            val name = scanNameUseCase()
+            // TODO: check settings
+            val new: NewScan? = if (result.pdf?.uri != null) {
+                NewScan(
+                    name,
+                    result.pdf?.uri?.toFile()?.parentFile?.canonicalPath!!,
+                    result.pdf?.pageCount!!,
+                    ScanExtension.PDF
                 )
-                .build()
-        )
-        return file
+            } else if (result.pages != null) {
+                NewScan(
+                    name,
+                    result.pages?.first()?.imageUri?.toFile()?.parentFile?.canonicalPath!!,
+                    result.pages?.size!!,
+                    extension = ScanExtension.JPEG
+                )
+            } else null
+
+
+            requireNotNull(new)
+            val newId = scansRepository.newScan(new)
+
+
+            val workManager = WorkManager.getInstance(context)
+            // Send request to save scan and open file
+            workManager.enqueue(
+                OneTimeWorkRequestBuilder<SaveScanWorker>().addTag("save_scan_$newId")
+                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                    .setInputData(
+                        workDataOf(
+                            "data" to Json.encodeToString(
+                                SaveScanTask(
+                                    newId,
+                                    if (result.pdf?.uri != null) {
+                                        listOf(result.pdf!!.uri.toString())
+                                    } else {
+                                        result.pages!!.map { it.imageUri.toString() }
+                                    },
+                                )
+                            )
+                        )
+                    )
+                    .build()
+            )
+            //return scansRepository.getScanById(newId)
+        }
 
     }
 

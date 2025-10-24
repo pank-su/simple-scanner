@@ -39,7 +39,7 @@ class MainActivityViewModel @Inject constructor(
                             val data = loadData()
                             MainActivityState.Success(data)
 
-                        } catch (ioException: IOException) {
+                        } catch (_: IOException) {
                             MainActivityState.Error(resourceProvider.getString(R.string.error_unknown))
                         }
                     }

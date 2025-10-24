@@ -12,12 +12,12 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import su.pank.simplescanner.data.scan_settings.ScanSettingsSerializer
-import su.pank.simplescanner.data.scans.ScansSerializer
+import su.pank.simplescanner.data.scans.DefaultScanRepository
+import su.pank.simplescanner.data.scans.ScanRepository
 import su.pank.simplescanner.data.settings.SettingsSerializer
+import su.pank.simplescanner.database.dao.ScanDao
 import su.pank.simplescanner.proto.AppSettingsProto
-import su.pank.simplescanner.proto.Scans
 import su.pank.simplescanner.proto.ScansSettingsProto
-
 import javax.inject.Singleton
 
 @Module
@@ -46,14 +46,9 @@ object dataModule {
 
     @Provides
     @Singleton
-    fun provideScansDataStore(
-        @ApplicationContext context: Context
-    ): DataStore<Scans> = DataStoreFactory.create(
-        serializer = ScansSerializer,
-        scope = CoroutineScope(Dispatchers.IO)
-    ) {
-        context.dataStoreFile("scans.pb")
-    }
+    fun provideScanRepository(scanDao: ScanDao): ScanRepository = DefaultScanRepository(scanDao)
+
+
 
 
 }

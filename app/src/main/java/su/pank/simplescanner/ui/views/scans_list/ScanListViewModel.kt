@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import su.pank.simplescanner.data.scans.ScansRepository
+import su.pank.simplescanner.data.scans.ScanRepository
 import su.pank.simplescanner.ui.components.ScansUiState
 import su.pank.simplescanner.utils.timeFlow
 import javax.inject.Inject
@@ -17,7 +17,7 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 @HiltViewModel
 class ScanListViewModel @Inject constructor(
-    scansRepository: ScansRepository,
+    scansRepository: ScanRepository,
 ) : ViewModel() {
     val scansUiState = combine(scansRepository.scans, timeFlow(1.seconds)) { scans, time ->
         if (scans.isEmpty()) {

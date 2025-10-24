@@ -31,8 +31,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import su.pank.simplescanner.R
-import su.pank.simplescanner.data.models.ScannedItem
-import su.pank.simplescanner.data.models.TestItem
+import su.pank.simplescanner.data.models.Scan
+import su.pank.simplescanner.data.models.testScan
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 import su.pank.simplescanner.utils.SharedElementScopeCompositionLocal
 import su.pank.simplescanner.utils.rememberTimeFormatter
@@ -45,7 +45,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @Composable
 fun ScanList(
     state: ScansUiState,
-    onClickedScan: (ScannedItem) -> Unit,
+    onClickedScan: (Scan) -> Unit,
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues = PaddingValues.Zero
 ) {
@@ -69,9 +69,9 @@ fun ScanList(
 @OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
 @Composable
 private fun SuccessState(
-    scans: List<ScannedItem>,
+    scans: List<Scan>,
     timeNow: Instant,
-    onClickedScan: (ScannedItem) -> Unit,
+    onClickedScan: (Scan) -> Unit,
     paddingValues: PaddingValues
 ) {
     val timeFormatter = rememberTimeFormatter()
@@ -120,12 +120,12 @@ private fun SuccessState(
                             textAlign = TextAlign.End
                         )
                         when (item) {
-                            is ScannedItem.JpgItem -> Icon(
+                            is Scan.ScanJpg -> Icon(
                                 painterResource(R.drawable.jpeg_icon),
                                 contentDescription = "File extension"
                             )
 
-                            is ScannedItem.PdfFile -> Icon(
+                            is Scan.ScanPdf -> Icon(
                                 painterResource(R.drawable.pdf_icon),
                                 contentDescription = "File extension"
                             )
@@ -147,7 +147,7 @@ private fun SuccessState(
 @Composable
 fun ScanListPreview() {
     val state =
-        ScansUiState.Success(scans = listOf(TestItem, TestItem), timeNow = Clock.System.now())
+        ScansUiState.Success(scans = listOf(testScan, testScan), timeNow = Clock.System.now())
     SimpleScannerTheme {
         SharedElementScopeCompositionLocal {
             ScanList(state = state, onClickedScan = {})

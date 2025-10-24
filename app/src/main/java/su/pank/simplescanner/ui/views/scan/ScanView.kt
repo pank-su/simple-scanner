@@ -28,8 +28,8 @@ import androidx.navigation.toRoute
 import coil3.request.crossfade
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
-import su.pank.simplescanner.data.models.ScannedItem
-import su.pank.simplescanner.data.models.TestItem
+import su.pank.simplescanner.data.models.Scan
+import su.pank.simplescanner.data.models.testScan
 import su.pank.simplescanner.ui.components.PageCarousel
 import su.pank.simplescanner.utils.SharedElementScopeCompositionLocal
 import su.pank.simplescanner.utils.serializableType
@@ -43,11 +43,11 @@ import kotlin.uuid.ExperimentalUuidApi
 
 
 @Serializable
-data class Scan(val scannedItem: ScannedItem) {
+data class ScanMessage(val scan: Scan) {
     companion object {
-        val typeMap = mapOf(typeOf<ScannedItem>() to serializableType<ScannedItem>())
+        val typeMap = mapOf(typeOf<Scan>() to serializableType<Scan>())
         fun from(savedStateHandle: SavedStateHandle) =
-            savedStateHandle.toRoute<Scan>(typeMap)
+            savedStateHandle.toRoute<ScanMessage>(typeMap)
     }
 }
 
@@ -66,7 +66,7 @@ fun ScanRoute(scanViewModel: ScanViewModel = hiltViewModel(), onBackPressed: () 
 )
 @Composable
 fun ScanView(
-    item: ScannedItem,
+    item: Scan,
     onBackPressed: () -> Unit,
     onShare: () -> Unit,
     modifier: Modifier = Modifier
@@ -122,7 +122,7 @@ fun ScanViewPreview() {
     SharedElementScopeCompositionLocal {
 
         ScanView(
-            item = TestItem,
+            item = testScan,
             onBackPressed = {}, {}
         )
     }

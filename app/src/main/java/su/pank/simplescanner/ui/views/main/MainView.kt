@@ -36,7 +36,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanner
@@ -45,11 +44,10 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.SCANNER_MODE_FULL
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
-import su.pank.simplescanner.data.models.ScannedItem
-import su.pank.simplescanner.data.models.TestItem
+import su.pank.simplescanner.data.models.Scan
+import su.pank.simplescanner.data.models.testScan
 import su.pank.simplescanner.ui.components.ScansCarousel
 import su.pank.simplescanner.ui.components.ScansUiState
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
@@ -60,7 +58,6 @@ import su.pank.simplescanner.utils.LocalSharedTransitionScope
 import su.pank.simplescanner.utils.LocalePreview
 import su.pank.simplescanner.utils.SharedElementScopeCompositionLocal
 import su.pank.simplescanner.utils.currentOrThrow
-import java.io.File
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -72,7 +69,7 @@ object Main
 @Composable
 fun MainRoute(
     onListViewOpen: () -> Unit,
-    selectScan: (ScannedItem) -> Unit,
+    selectScan: (Scan) -> Unit,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -82,27 +79,17 @@ fun MainRoute(
 
     val launcher = rememberLauncherForActivityResult(StartIntentSenderForResult()) { result ->
 
-        coroutineScope.launch {
-            if (result.resultCode == RESULT_OK) {
-                val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
-                if (result != null) {
-                    val scanItem: ScannedItem = viewModel.saveFile(result, context)
-                    selectScan(scanItem)
-                    return@launch
-                }
-                // TODO: проверить нет ли ошибок при ином исходе
-                result?.pdf?.uri?.path?.let { path ->
-                    // Переход в следующий экран с файлом
+        if (result.resultCode == RESULT_OK) {
+            val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
+            if (result != null) {
+                viewModel.saveFile(result, context)
 
-                    val externalUri = FileProvider.getUriForFile(
-                        context, activity?.packageName + ".provider", File(path)
-                    )
-
-                }
             }
         }
 
+
     }
+
 
     val scansUiState by viewModel.scansUiState.collectAsStateWithLifecycle()
 
@@ -141,7 +128,7 @@ fun rememberScannerClient(): GmsDocumentScanner {
 @Composable
 fun MainView(
     scansUiState: ScansUiState,
-    selectScan: (ScannedItem) -> Unit,
+    selectScan: (Scan) -> Unit,
     scan: () -> Unit,
     onListViewOpen: () -> Unit,
 ) {
@@ -229,7 +216,7 @@ fun MainViewPreview() {
 
                 ScansUiState.Success(
                     listOf(
-                        TestItem, TestItem, TestItem
+                        testScan, testScan, testScan
                     ), Clock.System.now()
                 ),
                 {},

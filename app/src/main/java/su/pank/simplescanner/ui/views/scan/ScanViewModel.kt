@@ -13,25 +13,24 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import su.pank.simplescanner.data.models.ScannedItem
-import su.pank.simplescanner.data.scans.ScansRepository
+import su.pank.simplescanner.data.models.Scan
+import su.pank.simplescanner.data.scans.ScanRepository
 import java.io.File
 import javax.inject.Inject
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.toJavaUuid
 
 @OptIn(ExperimentalUuidApi::class)
 @HiltViewModel
 class ScanViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     @ApplicationContext context: Context,
-    scansRepository: ScansRepository
+    scansRepository: ScanRepository
 ) : ViewModel() {
-    private val scanItemFromHandle: ScannedItem = Scan.from(savedStateHandle).scannedItem
+    private val scanItemFromHandle: Scan = ScanMessage.from(savedStateHandle).scan
     val scanItem =
-        WorkManager.getInstance(context).getWorkInfoByIdFlow(scanItemFromHandle.id.toJavaUuid())
+        WorkManager.getInstance(context).getWorkInfosByTagFlow("save_scan_${scanItemFromHandle.id}")
             .map {
-                if (it?.state != WorkInfo.State.SUCCEEDED) return@map scanItemFromHandle
+                if (it.firstOrNull()?.state != WorkInfo.State.SUCCEEDED) return@map scanItemFromHandle
                 return@map scansRepository.getScanById(scanItemFromHandle.id)
             }.stateIn(viewModelScope, SharingStarted.Eagerly, scanItemFromHandle)
 
@@ -45,7 +44,7 @@ class ScanViewModel @Inject constructor(
         val item = scanItem.value
         val intent =
             when (item) {
-                is ScannedItem.JpgItem -> {
+                is Scan.ScanJpg -> {
                     Intent().apply {
                         action = Intent.ACTION_SEND_MULTIPLE
                         putParcelableArrayListExtra(
@@ -57,7 +56,7 @@ class ScanViewModel @Inject constructor(
                     }
                 }
 
-                is ScannedItem.PdfFile -> Intent().apply {
+                is Scan.ScanPdf -> Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_STREAM, getUri(context, item.file))
                     type = "application/pdf"

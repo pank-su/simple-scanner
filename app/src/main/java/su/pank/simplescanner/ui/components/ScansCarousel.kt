@@ -41,8 +41,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import su.pank.simplescanner.R
-import su.pank.simplescanner.data.models.ScannedItem
-import su.pank.simplescanner.data.models.TestItem
+import su.pank.simplescanner.data.models.Scan
+import su.pank.simplescanner.data.models.testScan
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 import su.pank.simplescanner.utils.DarkLightPreview
 import su.pank.simplescanner.utils.LocalNavAnimatedVisibilityScope
@@ -60,7 +60,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @Composable
 fun ScansCarousel(
     state: ScansUiState,
-    onClickedScan: (ScannedItem) -> Unit,
+    onClickedScan: (Scan) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -124,9 +124,9 @@ internal fun EmptyState() {
 )
 @Composable
 private fun SuccessState(
-    scans: List<ScannedItem>,
+    scans: List<Scan>,
     timeNow: Instant,
-    onClickedScan: (ScannedItem) -> Unit
+    onClickedScan: (Scan) -> Unit
 ) {
     val timeFormatter = rememberTimeFormatter()
     val context = LocalContext.current
@@ -244,12 +244,12 @@ private fun SuccessState(
                     }
 
                     when (item) {
-                        is ScannedItem.JpgItem -> Icon(
+                        is Scan.ScanJpg -> Icon(
                             painterResource(R.drawable.jpeg_icon),
                             contentDescription = "File extension"
                         )
 
-                        is ScannedItem.PdfFile -> Icon(
+                        is Scan.ScanPdf -> Icon(
                             painterResource(R.drawable.pdf_icon),
                             contentDescription = "File extension"
                         )
@@ -267,11 +267,11 @@ private fun SuccessState(
 @Preview
 @Composable
 fun ScansCarouselPreview() {
-    val scans = listOf<ScannedItem>(
-        TestItem,
-        TestItem,
-        TestItem,
-        TestItem
+    val scans = listOf<Scan>(
+        testScan,
+        testScan,
+        testScan,
+        testScan
     )
     SimpleScannerTheme {
         SharedElementScopeCompositionLocal {
@@ -318,7 +318,7 @@ sealed interface ScansUiState {
 
     object Empty : ScansUiState
 
-    data class Success(val scans: List<ScannedItem>, val timeNow: Instant) : ScansUiState {
+    data class Success(val scans: List<Scan>, val timeNow: Instant) : ScansUiState {
         init {
             require(scans.isNotEmpty())
         }

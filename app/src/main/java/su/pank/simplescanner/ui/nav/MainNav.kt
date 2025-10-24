@@ -12,7 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import su.pank.simplescanner.ui.views.main.Main
 import su.pank.simplescanner.ui.views.main.MainRoute
-import su.pank.simplescanner.ui.views.scan.Scan
+import su.pank.simplescanner.ui.views.scan.ScanMessage
 import su.pank.simplescanner.ui.views.scan.ScanRoute
 import su.pank.simplescanner.ui.views.scans_list.ScanList
 import su.pank.simplescanner.ui.views.scans_list.ScanListRoute
@@ -59,11 +59,11 @@ fun ScannerNavHost(
                         MainRoute({
                             navController.navigate(ScanList)
                         }, {
-                            navController.navigate(Scan(it) )
+                            navController.navigate(ScanMessage(it))
                         })
                     }
                 }
-                composable<Scan>(typeMap = Scan.typeMap) { entry ->
+                composable<ScanMessage>(typeMap = ScanMessage.typeMap) { entry ->
                     AnimatedScopeProvider {
                         ScanRoute{
                             navController.popBackStack()
@@ -73,7 +73,7 @@ fun ScannerNavHost(
                 composable<ScanList> {
                     AnimatedScopeProvider {
                         ScanListRoute({
-                            navController.navigate(Scan(it))
+                            navController.navigate(ScanMessage(it))
                         }, {
                             navController.popBackStack()
                         })

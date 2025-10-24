@@ -15,7 +15,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
-import su.pank.simplescanner.data.models.ScannedItem
+import su.pank.simplescanner.data.models.Scan
 import su.pank.simplescanner.ui.components.ScanList
 import su.pank.simplescanner.ui.components.ScansUiState
 
@@ -25,7 +25,7 @@ object ScanList
 
 @Composable
 fun ScanListRoute(
-    onScanSelect: (ScannedItem) -> Unit,
+    onScanSelect: (Scan) -> Unit,
     onBackHandler: () -> Unit,
     viewModel: ScanListViewModel = hiltViewModel()
 ) {
@@ -36,7 +36,7 @@ fun ScanListRoute(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScanListView(state: ScansUiState, onScanSelect: (ScannedItem) -> Unit) {
+fun ScanListView(state: ScansUiState, onScanSelect: (Scan) -> Unit) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(topBar = {
         TopAppBar(title = {

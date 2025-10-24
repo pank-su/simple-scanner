@@ -7,8 +7,8 @@ import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.serialization.json.Json
-import su.pank.simplescanner.data.models.ScannedItem
 import su.pank.simplescanner.domain.SaveScanUseCase
+import su.pank.simplescanner.domain.models.SaveScanTask
 
 @HiltWorker
 class SaveScanWorker @AssistedInject constructor(
@@ -18,9 +18,8 @@ class SaveScanWorker @AssistedInject constructor(
 ): CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result {
         requireNotNull(inputData.getString("data"))
-        val scannedItem = Json.decodeFromString<ScannedItem>(inputData.getString("data")!!)
-        saveScanUseCase(scannedItem)
-
+        val scan = Json.decodeFromString<SaveScanTask>(inputData.getString("data")!!)
+        saveScanUseCase(scan)
         return Result.success()
     }
 

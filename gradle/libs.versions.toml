@@ -30,6 +30,7 @@ workRuntimeKtx = "2.11.0"
 foundation = "1.9.4"
 coil = "3.3.0"
 oss-licenses = "0.10.9"
+room = "2.8.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,7 +52,7 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref="materail3"}
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "materail3" }
 document-scanner = { group = "com.google.android.gms", name = "play-services-mlkit-document-scanner", version.ref = "document-scanner" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
@@ -66,14 +67,18 @@ protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin-lite", version
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose-viewmodel-navigation = { module = "io.insert-koin:koin-compose-viewmodel-navigation", version.ref = "koin" }
-koin-android = {module = "io.insert-koin:koin-android", version.ref="koin"}
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 
-hilt = {module = "com.google.dagger:hilt-android", version.ref="hilt"}
+hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-lifecycle-viewmodel-compose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "hilt-ext" }
-hilt-android-compiler = {module="com.google.dagger:hilt-android-compiler", version.ref="hilt"}
-hilt-navigation-compose = {module="androidx.hilt:hilt-navigation-compose", version.ref="hilt-ext"}
-hilt-compiler = {module = "androidx.hilt:hilt-compiler", version.ref="hilt-ext"}
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
+hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-ext" }
+hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt-ext" }
 androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -81,6 +86,6 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
-hilt-android = {  id = "com.google.dagger.hilt.android", version.ref="hilt"}
-ksp = {id = "com.google.devtools.ksp", version.ref ="ksp"}
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 oss-licenses = { id = "com.google.android.gms.oss-licenses-plugin", version.ref = "oss-licenses" }
