@@ -100,8 +100,6 @@ fun ScanView(
         ) {
             PageCarousel(
                 pages = images,
-                item.id.toHexString(),
-
                 Modifier.weight(1f)
             )
         }

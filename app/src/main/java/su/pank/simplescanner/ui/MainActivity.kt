@@ -7,6 +7,7 @@ import android.view.View
 import android.view.animation.AnticipateInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.WindowInsets
@@ -29,7 +30,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import su.pank.simplescanner.R
-import su.pank.simplescanner.ui.nav.ScannerNavHost
+import su.pank.simplescanner.ui.nav.ScannerNav
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 import su.pank.simplescanner.ui.views.main.Main
 import su.pank.simplescanner.ui.views.splash.Splash
@@ -43,7 +44,6 @@ class MainActivity : ComponentActivity() {
     private val viewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         val splashScreen = installSplashScreen()
 
         super.onCreate(savedInstanceState)
@@ -79,14 +79,17 @@ class MainActivity : ComponentActivity() {
             val updateString = stringResource(R.string.error_no_services)
 
             SimpleScannerTheme {
-                ScannerNavHost(onRestart = ::restartApp, backStack)
-                StatusBarProtection()
+
+                //StatusBarProtection()
 
                 LaunchedEffect(state) {
+
                     if (state is MainActivityState.Loading) {
                         return@LaunchedEffect
                     }
                     delay(0.5.seconds)
+                    enableEdgeToEdge()
+
                     backStack.add(
                         when (state) {
                             is MainActivityState.Error -> SplashError((state as MainActivityState.Error).message)
@@ -97,7 +100,11 @@ class MainActivity : ComponentActivity() {
                             is MainActivityState.Success -> Main
                         }
                     )
+                    backStack.removeAt(0)
                 }
+
+                ScannerNav(onRestart = ::restartApp, backStack)
+
 
             }
 

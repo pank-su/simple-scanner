@@ -1,9 +1,6 @@
 package su.pank.simplescanner.ui.components
 
-import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -46,7 +43,6 @@ import su.pank.simplescanner.utils.currentOrThrow
 @Composable
 fun PageCarousel(
     pages: List<ImageRequest>,
-    key: String,
     modifier: Modifier = Modifier,
     withPager: Boolean = true,
 ) {
@@ -56,34 +52,13 @@ fun PageCarousel(
     val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
     val animatedContentScope = LocalNavAnimatedContentScope.current
 
-    val rounderCornerAnim by animatedContentScope.transition.animateDp(label = "rounded corners") { enterExitState ->
-        when (enterExitState) {
-            EnterExitState.PreEnter -> 4.dp
-            EnterExitState.Visible -> 28.dp
-            EnterExitState.PostExit -> 28.dp
-        }
-    }
+
     val state = rememberCarouselState { size }
     if (size == 1) {
         with(sharedTransitionScope) {
 
             Box(
                 modifier = modifier
-                    .sharedBounds(
-                        sharedTransitionScope.rememberSharedContentState(
-                            AnimKeys.containerKey(
-                                0,
-                                key
-                            )
-                        ),
-                        animatedContentScope,
-                        clipInOverlayDuringTransition = OverlayClip(
-                            RoundedCornerShape(
-                                rounderCornerAnim
-                            )
-                        ),
-                        resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                    )
                     .clip(RoundedCornerShape(28.dp))
                     .fillMaxSize()
             ) {
@@ -91,15 +66,6 @@ fun PageCarousel(
                     pages[0],
                     contentDescription = "page",
                     modifier = Modifier
-                        .sharedElement(
-                            sharedTransitionScope.rememberSharedContentState(
-                                key = AnimKeys.pageKey(
-                                    0,
-                                    key
-                                )
-                            ),
-                            animatedContentScope,
-                        )
                         .fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
@@ -122,23 +88,6 @@ fun PageCarousel(
 
                 Box(
                     modifier = Modifier
-                        .sharedBounds(
-                            sharedTransitionScope.rememberSharedContentState(
-                                AnimKeys.containerKey(
-                                    it,
-                                    key
-                                )
-                            ),
-                            animatedContentScope,
-                            clipInOverlayDuringTransition = OverlayClip(
-                                RoundedCornerShape(
-                                    rounderCornerAnim
-                                )
-                            ),
-
-                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-
-                        )
                         .maskClip(RoundedCornerShape(28.dp))
                         .fillMaxSize()
                 ) {
@@ -146,15 +95,6 @@ fun PageCarousel(
                         page,
                         contentDescription = "page",
                         modifier = Modifier
-                            .sharedElement(
-                                sharedTransitionScope.rememberSharedContentState(
-                                    key = AnimKeys.pageKey(
-                                        it,
-                                        key
-                                    )
-                                ),
-                                animatedContentScope,
-                            )
                             .fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
@@ -205,7 +145,6 @@ private fun PageCarouselPreview() {
 
 
                 ),
-                "test",
                 modifier = Modifier.aspectRatio(230f / 300f)
             )
         }

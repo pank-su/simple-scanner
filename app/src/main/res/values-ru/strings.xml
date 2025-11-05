@@ -278,4 +278,5 @@
     <string name="version">Версия приложения</string>
     <string name="used_libs">Используемые библиотеки</string>
     <string name="made_with_by">"Сделано с ❤️  "</string>
+    <string name="scan_list">Список сканов</string>
 </resources>

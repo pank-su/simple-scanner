@@ -1,12 +1,10 @@
 package su.pank.simplescanner.ui.components
 
-import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.animateDp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -39,17 +37,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import coil3.compose.AsyncImage
 import su.pank.simplescanner.R
 import su.pank.simplescanner.data.models.Scan
 import su.pank.simplescanner.data.models.testScan
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 import su.pank.simplescanner.utils.DarkLightPreview
-import su.pank.simplescanner.utils.LocalSharedTransitionScope
 import su.pank.simplescanner.utils.LocalePreview
 import su.pank.simplescanner.utils.SharedElementScopeCompositionLocal
-import su.pank.simplescanner.utils.currentOrThrow
 import su.pank.simplescanner.utils.rememberTimeFormatter
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -99,7 +94,7 @@ internal fun EmptyState() {
     ElevatedCard(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
-                .fillMaxHeight()
+                .fillMaxSize()
                 .padding(horizontal = 100.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically)
@@ -133,23 +128,22 @@ private fun SuccessState(
     val state = rememberCarouselState { scans.size.coerceAtLeast(3) }
 
 
+
     HorizontalMultiBrowseCarousel(
         state,
         preferredItemWidth = 145.dp,
         itemSpacing = 10.dp,
         modifier = Modifier.fillMaxSize(),
         userScrollEnabled = scans.size >= 3,
+        contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
         val item = scans.getOrNull(it)
         if (item == null) {
             Spacer(Modifier.fillMaxSize())
             return@HorizontalMultiBrowseCarousel
         }
-        val preview = remember(item) {
+        val preview = remember(item.id) {
             item.imageRequests(context).firstOrNull()?.build()
-        }
-        val key = remember(item) {
-            item.id.toHexString()
         }
         val timeText by remember(timeNow) {
             derivedStateOf {
@@ -161,49 +155,20 @@ private fun SuccessState(
 
         ElevatedCard(
             onClick = {
-
                 onClickedScan(item)
             },
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
                 .maskClip(MaterialTheme.shapes.medium)
         ) {
 
             Column(
                 Modifier
                     .padding(10.dp)
-                    .fillMaxSize()
             ) {
-
-                val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
-                val animatedContentScope = LocalNavAnimatedContentScope.current
-                val rounderCornerAnim by animatedContentScope.transition.animateDp(label = "rounded corners") { enterExitState ->
-                    when (enterExitState) {
-                        EnterExitState.PreEnter -> 28.dp
-                        EnterExitState.Visible -> 4.dp
-                        EnterExitState.PostExit -> 4.dp
-                    }
-                }
-
-                with(sharedTransitionScope) {
 
                     Box(
                         modifier = Modifier
-                            .sharedBounds(
-                                sharedTransitionScope.rememberSharedContentState(
-                                    AnimKeys.containerKey(
-                                        0,
-                                        key
-                                    )
-                                ),
-                                animatedContentScope,
-                                clipInOverlayDuringTransition = OverlayClip(
-                                    RoundedCornerShape(
-                                        rounderCornerAnim
-                                    )
-                                ),
-                                resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                            )
                             .maskClip(
                                 RoundedCornerShape(4.dp)
                             )
@@ -214,18 +179,12 @@ private fun SuccessState(
                             preview,
                             contentDescription = "preview",
                             modifier = Modifier
-                                .sharedElement(
-                                    sharedTransitionScope.rememberSharedContentState(
-                                        AnimKeys.pageKey(0, key)
-                                    ),
-                                    animatedVisibilityScope = animatedContentScope,
-                                )
                                 .fillMaxSize(),
                             contentScale = ContentScale.Crop,
 
                             )
+
                     }
-                }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {

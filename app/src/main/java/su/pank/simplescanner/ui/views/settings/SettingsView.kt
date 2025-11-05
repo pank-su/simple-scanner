@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -50,7 +51,10 @@ import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 fun SettingsView(viewModel: SettingsViewModel = hiltViewModel<SettingsViewModel>()) {
     val settingUiState by viewModel.scansSettingsUiState.collectAsStateWithLifecycle()
 
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.widthIn(max = 500.dp)
+    ) {
         ScanSettings(
             settingUiState,
             viewModel::setExtension,

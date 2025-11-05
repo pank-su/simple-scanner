@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,9 +24,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,6 +38,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import androidx.window.core.layout.WindowSizeClass
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
@@ -64,12 +64,12 @@ data object Main : NavKey
 @Composable
 fun MainRoute(
     onListViewOpen: () -> Unit,
+    listViewIsOpen: Boolean,
     selectScan: (Scan) -> Unit,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val activity = LocalActivity.current
-    rememberCoroutineScope()
 
 
     val launcher = rememberLauncherForActivityResult(StartIntentSenderForResult()) { result ->
@@ -98,6 +98,7 @@ fun MainRoute(
                 )
         },
         onListViewOpen,
+        listViewIsOpen
     )
 
 }
@@ -116,9 +117,11 @@ fun MainView(
     selectScan: (Scan) -> Unit,
     scan: () -> Unit,
     onListViewOpen: () -> Unit,
+    isListViewOpen: Boolean
 ) {
     val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
     val animatedContentScope = LocalNavAnimatedContentScope.current
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
 
     Scaffold(topBar = {
@@ -127,18 +130,36 @@ fun MainView(
                 stringResource(R.string.recent_title),
             )
         }, actions = {
+            val showTabletIcon =
+                windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
             IconButton(onClick = onListViewOpen) {
-                Icon(painterResource(R.drawable.list), stringResource(R.string.alt_list))
+                if (!showTabletIcon)
+                    Icon(painterResource(R.drawable.list), stringResource(R.string.alt_list))
+                else {
+
+                    if (isListViewOpen) {
+                        Icon(
+                            painterResource(R.drawable.right_panel_close),
+                            stringResource(R.string.alt_list)
+                        )
+                    } else {
+                        Icon(
+                            painterResource(R.drawable.right_panel_open),
+                            stringResource(R.string.alt_list)
+                        )
+                    }
+
+                }
             }
         })
     }) { innerPadding ->
         LazyColumn(
             Modifier
-                .consumeWindowInsets(innerPadding)
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp),
             contentPadding = innerPadding,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
                 ScansCarousel(scansUiState, selectScan, modifier = Modifier.fillMaxWidth())
@@ -206,7 +227,9 @@ fun MainViewPreview() {
                 ),
                 {},
                 {},
-            ) { }
+                {},
+                isListViewOpen = false
+            )
         }
     }
 }

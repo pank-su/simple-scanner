@@ -80,6 +80,9 @@ private fun SuccessState(
 
 
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = paddingValues) {
+        item {
+            Spacer(Modifier.height(10.dp))
+        }
         items(scans) { item ->
             val timeText by remember(timeNow) {
                 derivedStateOf {
@@ -98,7 +101,6 @@ private fun SuccessState(
                 ) {
                     PageCarousel(
                         item.imageRequests(context).map { it.build() },
-                        item.id.toHexString(),
                         modifier = Modifier.width(200.dp),
                         withPager = false
                     )
