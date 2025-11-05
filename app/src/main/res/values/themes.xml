@@ -3,7 +3,6 @@
 
     <style name="Theme.SimpleScanner.Main" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <style name="Theme.SimpleScanner" parent="android:Theme.Material.Light.NoActionBar" >
-    </style>
+    <style name="Theme.SimpleScanner" parent="android:Theme.Material.Light.NoActionBar"></style>
 
 </resources>

@@ -15,7 +15,7 @@ class SaveScanWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val saveScanUseCase: SaveScanUseCase
-): CoroutineWorker(appContext, workerParams) {
+) : CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result {
         requireNotNull(inputData.getString("data"))
         val scan = Json.decodeFromString<SaveScanTask>(inputData.getString("data")!!)

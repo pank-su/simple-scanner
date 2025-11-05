@@ -39,13 +39,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import coil3.compose.AsyncImage
 import su.pank.simplescanner.R
 import su.pank.simplescanner.data.models.Scan
 import su.pank.simplescanner.data.models.testScan
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 import su.pank.simplescanner.utils.DarkLightPreview
-import su.pank.simplescanner.utils.LocalNavAnimatedVisibilityScope
 import su.pank.simplescanner.utils.LocalSharedTransitionScope
 import su.pank.simplescanner.utils.LocalePreview
 import su.pank.simplescanner.utils.SharedElementScopeCompositionLocal
@@ -176,7 +176,7 @@ private fun SuccessState(
             ) {
 
                 val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
-                val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
+                val animatedContentScope = LocalNavAnimatedContentScope.current
                 val rounderCornerAnim by animatedContentScope.transition.animateDp(label = "rounded corners") { enterExitState ->
                     when (enterExitState) {
                         EnterExitState.PreEnter -> 28.dp

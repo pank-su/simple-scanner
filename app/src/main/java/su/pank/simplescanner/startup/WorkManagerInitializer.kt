@@ -7,7 +7,7 @@ import androidx.work.Configuration
 import androidx.work.WorkManager
 import javax.inject.Inject
 
-class WorkManagerInitializer: Initializer<WorkManager>, Configuration.Provider {
+class WorkManagerInitializer : Initializer<WorkManager>, Configuration.Provider {
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
@@ -18,7 +18,8 @@ class WorkManagerInitializer: Initializer<WorkManager>, Configuration.Provider {
         return WorkManager.getInstance(context)
     }
 
-    override fun dependencies(): List<Class<out Initializer<*>?>?> = listOf(DependencyGraphInitializer::class.java)
+    override fun dependencies(): List<Class<out Initializer<*>?>?> =
+        listOf(DependencyGraphInitializer::class.java)
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder().setWorkerFactory(workerFactory).build()

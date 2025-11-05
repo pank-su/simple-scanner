@@ -1,7 +1,5 @@
 package su.pank.simplescanner.ui.theme.icons
 
-import su.pank.simplescanner.ui.theme.SimpleScannerTheme
-
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -22,8 +20,7 @@ import androidx.compose.ui.graphics.vector.group
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
-
+import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 
 
 val Cat: ImageVector

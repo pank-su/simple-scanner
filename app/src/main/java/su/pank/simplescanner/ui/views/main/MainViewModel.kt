@@ -93,7 +93,7 @@ class MainViewModel @Inject constructor(
     fun saveFile(result: GmsDocumentScanningResult, context: Context) {
 
         viewModelScope.launch(context = Dispatchers.IO) {
-            val settings = scanSettingsRepository.settings.first()
+            scanSettingsRepository.settings.first()
             val name = scanNameUseCase()
             val path = context.filesDir.resolve("saved_scans/${Uuid.random().toHexString()}")
 

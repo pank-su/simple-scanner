@@ -49,6 +49,4 @@ object dataModule {
     fun provideScanRepository(scanDao: ScanDao): ScanRepository = DefaultScanRepository(scanDao)
 
 
-
-
 }

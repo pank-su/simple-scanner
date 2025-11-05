@@ -30,11 +30,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import su.pank.simplescanner.R
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
-import su.pank.simplescanner.utils.LocalNavAnimatedVisibilityScope
 import su.pank.simplescanner.utils.LocalSharedTransitionScope
 import su.pank.simplescanner.utils.SharedElementScopeCompositionLocal
 import su.pank.simplescanner.utils.currentOrThrow
@@ -54,7 +54,7 @@ fun PageCarousel(
         derivedStateOf { pages.size }
     }
     val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
-    val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
+    val animatedContentScope = LocalNavAnimatedContentScope.current
 
     val rounderCornerAnim by animatedContentScope.transition.animateDp(label = "rounded corners") { enterExitState ->
         when (enterExitState) {
@@ -190,7 +190,7 @@ fun PageCarousel(
 @Preview
 @Composable
 private fun PageCarouselPreview() {
-    val photo = ImageBitmap.imageResource(id = R.drawable.photo)
+    ImageBitmap.imageResource(id = R.drawable.photo)
     SimpleScannerTheme {
         SharedElementScopeCompositionLocal {
 

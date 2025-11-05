@@ -3,11 +3,13 @@ package su.pank.simplescanner.ui.views.scan
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,17 +18,15 @@ import kotlinx.coroutines.flow.stateIn
 import su.pank.simplescanner.data.models.Scan
 import su.pank.simplescanner.data.scans.ScanRepository
 import java.io.File
-import javax.inject.Inject
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
-@HiltViewModel
-class ScanViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = ScanViewModel.Factory::class)
+class ScanViewModel @AssistedInject constructor(
     @ApplicationContext context: Context,
-    scansRepository: ScanRepository
+    scansRepository: ScanRepository,
+    @Assisted private val scanItemFromHandle: Scan
 ) : ViewModel() {
-    private val scanItemFromHandle: Scan = ScanMessage.from(savedStateHandle).scan
     val scanItem =
         WorkManager.getInstance(context).getWorkInfosByTagFlow("save_scan_${scanItemFromHandle.id}")
             .map {
@@ -66,6 +66,11 @@ class ScanViewModel @Inject constructor(
             }
         context.startActivity(Intent.createChooser(intent, null))
 
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(scanItem: Scan): ScanViewModel
     }
 
 

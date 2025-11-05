@@ -1,7 +1,6 @@
 package su.pank.simplescanner
 
 import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import coil3.ImageLoader
 import coil3.PlatformContext
@@ -10,11 +9,9 @@ import coil3.request.crossfade
 import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.HiltAndroidApp
 import su.pank.simplescanner.coil.pdf.PdfDecoder
-import javax.inject.Inject
 
 @HiltAndroidApp
-class MainApplication: Application(), SingletonImageLoader.Factory, Configuration.Provider  {
-
+class MainApplication : Application(), SingletonImageLoader.Factory, Configuration.Provider {
 
 
     override fun onCreate() {

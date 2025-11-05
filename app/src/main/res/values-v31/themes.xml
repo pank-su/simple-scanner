@@ -4,11 +4,12 @@
     <style name="Theme.SimpleScanner.Main" parent="android:Theme.Material.Light.NoActionBar" />
 
 
-    <style name="Theme.SimpleScanner"  parent="Theme.Material3Expressive.DynamicColors.Light.NoActionBar" >
+    <style name="Theme.SimpleScanner" parent="Theme.Material3Expressive.DynamicColors.Light.NoActionBar">
 
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/scan_anim</item>
         <item name="android:windowSplashScreenAnimationDuration">1000</item>
-        <item name="android:windowSplashScreenIconBackgroundColor">?attr/colorSurfaceContainer</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">?attr/colorSurfaceContainer
+        </item>
         <item name="android:windowSplashScreenBackground">?attr/colorSurface</item>
 
     </style>

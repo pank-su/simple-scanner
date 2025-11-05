@@ -240,6 +240,7 @@ private val highContrastDarkColorScheme = darkColorScheme(
     surfaceContainerHigh = surfaceContainerHighDarkHighContrast,
     surfaceContainerHighest = surfaceContainerHighestDarkHighContrast,
 )
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SimpleScannerTheme(

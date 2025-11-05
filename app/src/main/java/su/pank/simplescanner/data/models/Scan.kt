@@ -24,7 +24,6 @@ sealed interface Scan {
     fun imageRequests(context: Context): List<ImageRequest.Builder>
 
 
-
     @SerialName("pdf")
     @Serializable
     data class ScanPdf(
@@ -50,7 +49,6 @@ sealed interface Scan {
         }
 
 
-
     }
 
     @SerialName("jpg")
@@ -68,7 +66,6 @@ sealed interface Scan {
                 .memoryCacheKey("$id-$index")
 
         }
-
 
 
     }

@@ -22,9 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.toRoute
+import androidx.navigation3.runtime.NavKey
 import coil3.request.crossfade
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
@@ -32,24 +31,16 @@ import su.pank.simplescanner.data.models.Scan
 import su.pank.simplescanner.data.models.testScan
 import su.pank.simplescanner.ui.components.PageCarousel
 import su.pank.simplescanner.utils.SharedElementScopeCompositionLocal
-import su.pank.simplescanner.utils.serializableType
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import kotlin.reflect.typeOf
 import kotlin.time.ExperimentalTime
 import kotlin.time.toJavaInstant
 import kotlin.uuid.ExperimentalUuidApi
 
 
 @Serializable
-data class ScanMessage(val scan: Scan) {
-    companion object {
-        val typeMap = mapOf(typeOf<Scan>() to serializableType<Scan>())
-        fun from(savedStateHandle: SavedStateHandle) =
-            savedStateHandle.toRoute<ScanMessage>(typeMap)
-    }
-}
+data class ScanUI(val scan: Scan) : NavKey
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -61,7 +52,8 @@ fun ScanRoute(scanViewModel: ScanViewModel = hiltViewModel(), onBackPressed: () 
 }
 
 
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class,
+@OptIn(
+    ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class,
     ExperimentalMaterial3ExpressiveApi::class, ExperimentalTime::class, ExperimentalUuidApi::class
 )
 @Composable
@@ -76,15 +68,20 @@ fun ScanView(
     val images = remember(item) {
         item.imageRequests(context).map { it.crossfade(true).build() }
     }
-    val dateFormat = remember{
+    val dateFormat = remember {
         DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
     }
     Scaffold(topBar = {
         TopAppBar(title = {
             Text(item.name)
         }, subtitle = {
-            Text(stringResource(R.string.saved_at) + " " +  dateFormat.format(item.savedAt.toJavaInstant().atZone(
-                ZoneId.systemDefault())))
+            Text(
+                stringResource(R.string.saved_at) + " " + dateFormat.format(
+                    item.savedAt.toJavaInstant().atZone(
+                        ZoneId.systemDefault()
+                    )
+                )
+            )
         }, navigationIcon = {
             IconButton(onBackPressed, shapes = IconButtonDefaults.shapes()) {
                 Icon(painterResource(R.drawable.back_icon), "Back")

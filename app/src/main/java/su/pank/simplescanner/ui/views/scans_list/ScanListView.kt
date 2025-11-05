@@ -13,6 +13,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
 import su.pank.simplescanner.data.models.Scan
@@ -21,7 +22,7 @@ import su.pank.simplescanner.ui.components.ScansUiState
 
 
 @Serializable
-object ScanList
+data object ScanList : NavKey
 
 @Composable
 fun ScanListRoute(

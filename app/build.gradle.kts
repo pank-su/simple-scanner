@@ -103,7 +103,7 @@ dependencies {
 
     implementation(libs.document.scanner)
     implementation(libs.androidx.datastore)
-    implementation(libs.navigation.compose)
+    //implementation(libs.navigation.compose)
 
 
     implementation(libs.androidx.core.ktx)

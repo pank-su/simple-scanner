@@ -22,7 +22,7 @@
 
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="document_ui"/>
+            android:value="document_ui" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -42,14 +42,12 @@
 
             <meta-data
                 android:name="su.pank.simplescanner.startup.DependencyGraphInitializer"
-                android:value="androidx.startup"
-                 />
+                android:value="androidx.startup" />
 
 
             <meta-data
                 android:name="su.pank.simplescanner.startup.WorkManagerInitializer"
-                android:value="androidx.startup"
-                />
+                android:value="androidx.startup" />
 
             <meta-data
                 android:name="androidx.work.WorkManagerInitializer"

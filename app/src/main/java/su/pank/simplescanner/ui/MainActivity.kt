@@ -7,10 +7,8 @@ import android.view.View
 import android.view.animation.AnticipateInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.Canvas
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBars
@@ -27,7 +25,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.runtime.rememberNavBackStack
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import su.pank.simplescanner.R
@@ -75,14 +73,13 @@ class MainActivity : ComponentActivity() {
         viewModel.checkGoogleServicesAndLoadData(this)
 
         setContent {
-            val navController = rememberNavController()
-
+            val backStack = rememberNavBackStack(Splash)
             val state by viewModel.state.collectAsState()
 
             val updateString = stringResource(R.string.error_no_services)
 
             SimpleScannerTheme {
-                ScannerNavHost(onRestart = ::restartApp, navController = navController)
+                ScannerNavHost(onRestart = ::restartApp, backStack)
                 StatusBarProtection()
 
                 LaunchedEffect(state) {
@@ -90,7 +87,7 @@ class MainActivity : ComponentActivity() {
                         return@LaunchedEffect
                     }
                     delay(0.5.seconds)
-                    navController.navigate(
+                    backStack.add(
                         when (state) {
                             is MainActivityState.Error -> SplashError((state as MainActivityState.Error).message)
                             MainActivityState.Loading -> Splash
@@ -99,11 +96,7 @@ class MainActivity : ComponentActivity() {
                             ) // TODO: maybe use update google services dialog
                             is MainActivityState.Success -> Main
                         }
-                    ){
-                        popUpTo(Splash) {
-                            inclusive = true
-                        }
-                    }
+                    )
                 }
 
             }

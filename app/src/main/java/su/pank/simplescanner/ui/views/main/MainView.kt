@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,11 +37,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.mlkit.vision.documentscanner.GmsDocumentScanner
-import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
-import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
-import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.SCANNER_MODE_FULL
-import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
@@ -53,7 +49,6 @@ import su.pank.simplescanner.ui.components.ScansUiState
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
 import su.pank.simplescanner.ui.views.settings.SettingsView
 import su.pank.simplescanner.utils.DarkLightPreview
-import su.pank.simplescanner.utils.LocalNavAnimatedVisibilityScope
 import su.pank.simplescanner.utils.LocalSharedTransitionScope
 import su.pank.simplescanner.utils.LocalePreview
 import su.pank.simplescanner.utils.SharedElementScopeCompositionLocal
@@ -62,7 +57,7 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @Serializable
-object Main
+data object Main : NavKey
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -74,7 +69,7 @@ fun MainRoute(
 ) {
     val context = LocalContext.current
     val activity = LocalActivity.current
-    val coroutineScope = rememberCoroutineScope()
+    rememberCoroutineScope()
 
 
     val launcher = rememberLauncherForActivityResult(StartIntentSenderForResult()) { result ->
@@ -107,16 +102,6 @@ fun MainRoute(
 
 }
 
-@Composable
-fun rememberScannerClient(): GmsDocumentScanner {
-    return remember {
-        val options = GmsDocumentScannerOptions.Builder().setGalleryImportAllowed(true)
-            .setResultFormats(RESULT_FORMAT_JPEG).setScannerMode(SCANNER_MODE_FULL).build()
-
-        return@remember GmsDocumentScanning.getClient(options)
-    }
-
-}
 
 /**
  * @param onListViewOpen --- открытие списка всех сканов
@@ -133,7 +118,7 @@ fun MainView(
     onListViewOpen: () -> Unit,
 ) {
     val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
-    val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
+    val animatedContentScope = LocalNavAnimatedContentScope.current
 
 
     Scaffold(topBar = {
@@ -208,7 +193,7 @@ fun MainView(
 @Composable
 fun MainViewPreview() {
 
-    val context = LocalContext.current
+    LocalContext.current
 
     SimpleScannerTheme {
         SharedElementScopeCompositionLocal {

@@ -1,4 +1,5 @@
 package su.pank.simplescanner.ui.theme.icons
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

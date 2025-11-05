@@ -14,22 +14,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import kotlinx.serialization.Serializable
 import su.pank.simplescanner.R
 import su.pank.simplescanner.ui.theme.SimpleScannerTheme
-import su.pank.simplescanner.utils.LocalNavAnimatedVisibilityScope
 import su.pank.simplescanner.utils.LocalSharedTransitionScope
 import su.pank.simplescanner.utils.SharedElementScopeCompositionLocal
 import su.pank.simplescanner.utils.currentOrThrow
 
 @Serializable
-object Splash
+data object Splash : NavKey
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SplashView() {
     val sharedTransitionScope = LocalSharedTransitionScope.currentOrThrow
-    val animatedContentScope = LocalNavAnimatedVisibilityScope.currentOrThrow
+    val animatedContentScope = LocalNavAnimatedContentScope.current
 
     with(sharedTransitionScope) {
         Box(
