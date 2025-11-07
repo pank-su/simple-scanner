@@ -140,6 +140,8 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
+    implementation("net.engawapg.lib:zoomable:2.8.2")
+
 
 
 }

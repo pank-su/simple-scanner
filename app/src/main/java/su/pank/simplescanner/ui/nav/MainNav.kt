@@ -2,6 +2,8 @@ package su.pank.simplescanner.ui.nav
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -45,7 +47,6 @@ fun MainNav(
     val scanListIsOpen by remember {
         derivedStateOf { backStack.contains(ScanList) }
     }
-
     NavDisplay(
         backStack,
         modifier = modifier,
@@ -78,7 +79,7 @@ fun MainNav(
                     })
 
                 ScanRoute(scanViewModel) {
-                    backStack.removeLastOrNull()
+                    backStack.remove(it)
                 }
             }
             entry<ScanList>(metadata = NavDisplay.transitionSpec {
@@ -106,7 +107,21 @@ fun MainNav(
                     backStack.removeLastOrNull()
                 })
             }
-        }
+        },
+        transitionSpec = {
+            scaleIn() togetherWith scaleOut()
+        },
+        popTransitionSpec = {
+            // Slide in from left when navigating back
+            slideInHorizontally(initialOffsetX = { -it }) togetherWith
+                    slideOutHorizontally(targetOffsetX = { it })
+        },
+        predictivePopTransitionSpec = {
+            // Slide in from left when navigating back
+            slideInHorizontally(initialOffsetX = { -it }) togetherWith
+                    slideOutHorizontally(targetOffsetX = { it })
+        },
+
     )
 
 }
