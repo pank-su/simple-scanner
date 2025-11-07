@@ -49,7 +49,7 @@ class ScanViewModel @AssistedInject constructor(
                         action = Intent.ACTION_SEND_MULTIPLE
                         putParcelableArrayListExtra(
                             Intent.EXTRA_STREAM,
-                            ArrayList(item.fileNames.map { getUri(context, it) })
+                            ArrayList(item.fileNames.map { getUri(context, item.path + "/" + it) })
                         )
 
                         type = "image/*"
@@ -58,7 +58,7 @@ class ScanViewModel @AssistedInject constructor(
 
                 is Scan.ScanPdf -> Intent().apply {
                     action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_STREAM, getUri(context, item.fileName))
+                    putExtra(Intent.EXTRA_STREAM, getUri(context, item.path + "/" + item.fileName))
                     type = "application/pdf"
                 }
             }.apply {
