@@ -120,35 +120,3 @@ class MainActivity : ComponentActivity() {
 
 
 }
-
-
-@Composable
-private fun StatusBarProtection(
-    color: Color = MaterialTheme.colorScheme.surfaceContainer,
-    heightProvider: () -> Float = calculateGradientHeight(),
-) {
-
-    Canvas(Modifier.fillMaxSize()) {
-        val calculatedHeight = heightProvider()
-        val gradient = Brush.verticalGradient(
-            colors = listOf(
-                color.copy(alpha = 1f),
-                color.copy(alpha = .8f),
-                Color.Transparent
-            ),
-            startY = 0f,
-            endY = calculatedHeight
-        )
-        drawRect(
-            brush = gradient,
-            size = Size(size.width, calculatedHeight),
-        )
-    }
-}
-
-@Composable
-fun calculateGradientHeight(): () -> Float {
-    val statusBars = WindowInsets.statusBars
-    val density = LocalDensity.current
-    return { statusBars.getTop(density).times(1.5f) }
-}
